@@ -29,27 +29,43 @@ def get_chess_plate(source_img, ):
     # cropped_img_ref, cropped_values, cropped_center = get_cropped_img_from_max_contour(
     #     image_ref)
 
+    max_lines = 0
+
     for contour in contours:
-        cropped_img_ref, cropped_values, cropped_center = get_cropped_from_contour(
-            image_ref, contour)
+        _cropped_image = get_cropped_object_from_contour(
+            image_ref, contour, padding=10)
 
-        lines = get_lines(cropped_img_ref, threshold=100)
-        segmented = segment_by_angle_kmeans(lines)
-
-        if len(segmented) == 2:
-
-            i_lines = segmented[0]
-            j_lines = segmented[1]
-            # print("center", center)
-
-            # cv2.imshow("debug", cropped_img_ref)
-            # cv2.waitKey(0)
-
+        try:
             # # On recuper les lignes presentes dans l'image
-            # lines = get_lines(cropped_img_ref, threshold=100)
-            # segmented = segment_by_angle_kmeans(lines)
+            _lines = get_lines(_cropped_image.image, threshold=100)
 
-            # On obtient 2 groupes de ligne (i et j)
+            if (len(_lines) <= max_lines):
+                continue
+
+            _segmented = segment_by_angle_kmeans(_lines)
+
+            # Si il y a bien 2 groupes
+            if len(_segmented) == 2:
+
+                # On obtient 2 groupes de ligne (i et j)
+                i_lines = _segmented[0]
+                j_lines = _segmented[1]
+
+                cropped_image = _cropped_image
+                max_lines = len(_lines)
+
+                cp = cropped_image.image.copy()
+
+                for i in i_lines:
+                    show_line(cp, i, (0, 255, 0))
+                for i in j_lines:
+                    show_line(cp, i, (0, 0, 255))
+
+                cv2.imshow("title", cp)
+                cv2.waitKey(0)
+
+        except:
+            continue
 
     # On utilise les points de croisements de toute les lignes sur une lignes de reference pour trouver la premiere et la derniere
     # Par default, on definit :
@@ -57,20 +73,24 @@ def get_chess_plate(source_img, ):
     # j : axe 0
     try:
         # on inverse 0 et 1 si erreur (2 lignes paralleles)
-        min_max_i_line = get_min_max_lines(i_lines, cropped_center, axis=1)
-        min_max_j_line = get_min_max_lines(j_lines, cropped_center, axis=0)
+        min_max_i_line = get_min_max_lines(
+            i_lines, cropped_image.get_center(), axis=1)
+        min_max_j_line = get_min_max_lines(
+            j_lines, cropped_image.get_center(), axis=0)
 
     # 2 lignes paralleles => erreur
     # Si erreur, on inverse l'axe de reference pour les 2 groupes
     except:
-        min_max_i_line = get_min_max_lines(i_lines, cropped_center, axis=0)
-        min_max_j_line = get_min_max_lines(j_lines, cropped_center, axis=1)
+        min_max_j_line = get_min_max_lines(
+            i_lines, cropped_image.get_center(), axis=0)
+        min_max_i_line = get_min_max_lines(
+            j_lines, cropped_image.get_center(), axis=1)
 
     intersections = np.array(segmented_intersections(
         [min_max_i_line, min_max_j_line]))
 
     # Homographie avec les coordonnées du plateau trouvées
-    x, y, h, w = cropped_values
+    x, y, h, w = cropped_image.values
     intersections_img_ref = intersections + (x, y)
 
     src = np.array(intersections_img_ref)
@@ -84,18 +104,18 @@ def get_chess_plate(source_img, ):
     lines = get_lines(im_dst, threshold=110)
     segmented = segment_by_angle_kmeans(lines)
 
-    v_lines = segmented[0]
-    h_lines = segmented[1]
+    i_lines = segmented[0]
+    j_lines = segmented[1]
 
     # Les lignes detecté sont ici soit verticale, soit horizontale (homographie qui suit le plateau)
     # On cherches les points de croisement, si la ligne de croissement est parallele aux lignes, on inverse l'axe de croissement
     try:
-        v_points = np.array(get_lines_cross_points(v_lines, center, axis=0))
-        h_points = np.array(get_lines_cross_points(h_lines, center, axis=1))
+        v_points = np.array(get_lines_cross_points(i_lines, center, axis=0))
+        h_points = np.array(get_lines_cross_points(j_lines, center, axis=1))
     except:
         # En cas d'inversion, les lignes horizontales determinent alors les points verticale et inversement
-        v_points = np.array(get_lines_cross_points(h_lines, center, axis=0))
-        h_points = np.array(get_lines_cross_points(v_lines, center, axis=1))
+        v_points = np.array(get_lines_cross_points(j_lines, center, axis=0))
+        h_points = np.array(get_lines_cross_points(i_lines, center, axis=1))
 
         # print("EXCEPT")
 

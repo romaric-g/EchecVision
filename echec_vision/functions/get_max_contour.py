@@ -18,8 +18,9 @@ def get_max_contour(contours):
     return max_cnt
 
 
-def orders_contours(contours):
+def filter_and_order_contours(contours, min_area, order=True):
     areas = []
+    new_contours = []
     for cnt in contours:
         rect = cv2.minAreaRect(cnt)
         width = rect[1][0]
@@ -27,6 +28,8 @@ def orders_contours(contours):
 
         area = width * height
 
-        areas.append(area)
+        if (area >= min_area):
+            areas.append(area)
+            new_contours.append(cnt)
 
-    return [x for _, x in sorted(zip(areas, contours))]
+    return [x for _, x in sorted(zip(areas, new_contours), reverse=order)]

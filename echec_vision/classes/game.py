@@ -1,8 +1,10 @@
 import chess
+import os
 from enum import Enum
 import numpy as np
 import cv2 as cv2
 from classes.chess_plate import *
+from matplotlib import pyplot as plt
 
 
 class WHILE_LINE_POSITION(Enum):
@@ -21,9 +23,24 @@ def get_board_square(i, j, while_line_position):
     if (while_line_position == WHILE_LINE_POSITION.LAST_COLUMN):
         return chess.square(7-i, 7-j)
     if (while_line_position == WHILE_LINE_POSITION.LAST_ROW):
+        # reflexion : 7-j, 7-i) ,   en test : j, 7-i
         return chess.square(j, 7-i)
 
     return None
+
+
+imlog = 0
+imlog = imlog + 1
+
+
+def log_change_map(change_map):
+    img = (change_map / np.max(change_map)) * 255
+    plt.imshow(img, cmap='Greens', vmin=0, vmax=100)
+    plt.show()
+
+    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/logs'
+
+    cv2.imwrite(os.path.join(export_path, f'{imlog}_map.png'), img)
 
 
 class Game:
@@ -36,47 +53,45 @@ class Game:
 
     def play_from_plate(self, next_chess_plate: ChessPlate):
 
+        change_map = self.get_change_map(next_chess_plate)
+
+        log_change_map(change_map)
+
         if (self.white_line_position == None):
 
-            move, score = self.find_best_move(
-                next_chess_plate, WHILE_LINE_POSITION.FIRST_COLUMN)
+            move1, s1 = self.find_best_move(
+                change_map, WHILE_LINE_POSITION.FIRST_ROW)
 
-            # Va poser des problemes
+            # Va poser des problemes ?
 
-            # move2, s2 = self.find_best_move(
-            #     next_chess_plate, WHILE_LINE_POSITION.LAST_ROW)
-            # move3, s3 = self.find_best_move(
-            #     next_chess_plate, WHILE_LINE_POSITION.FIRST_COLUMN)
-            # move4, s4 = self.find_best_move(
-            #     next_chess_plate, WHILE_LINE_POSITION.LAST_COLUMN)
+            move2, s2 = self.find_best_move(
+                change_map, WHILE_LINE_POSITION.LAST_ROW)
+            move3, s3 = self.find_best_move(
+                change_map, WHILE_LINE_POSITION.FIRST_COLUMN)
+            move4, s4 = self.find_best_move(
+                change_map, WHILE_LINE_POSITION.LAST_COLUMN)
 
-            # moves = [move1, move2, move3, move4]
-            # scores = np.array([s1, s2, s3, s4])
+            moves = [move1, move2, move3, move4]
+            scores = np.array([s1, s2, s3, s4])
 
-            # max_idx = np.argmax(scores)
-            # move = moves[max_idx]
-            # score = scores[max_idx]
+            max_idx = np.argmax(scores)
+            move = moves[max_idx]
+            score = scores[max_idx]
 
-            # self.while_line_position = WHILE_LINE_POSITION(max_idx)
-            self.white_line_position = WHILE_LINE_POSITION.FIRST_COLUMN
+            self.white_line_position = WHILE_LINE_POSITION(max_idx+1)
 
             return self.play_from_move(move, next_chess_plate)
 
         move, score = self.find_best_move(
-            next_chess_plate, self.white_line_position)
+            change_map, self.white_line_position)
 
         return self.play_from_move(move, next_chess_plate)
 
     def play_from_move(self, move: chess.Move, next_chess_plate: ChessPlate):
-
-        print(move)
-
         self.last_chess_plate = next_chess_plate
         self.board.push(move)
 
-    def find_best_move(self, next_chess_plate, white_line_position):
-
-        change_map = self.get_change_map(next_chess_plate)
+    def find_best_move(self, change_map, white_line_position):
 
         ind = np.unravel_index(np.argsort(
             change_map, axis=None), change_map.shape)
@@ -102,8 +117,6 @@ class Game:
             # Si il y a une piece, mais que cette ci n'est pas au joueur, c'est que cette case ne peut pas être la case de depart du prochain coup
             if piece.color != self.player_color:
                 continue
-
-            attacked_squares = self.board.attacks(square)
 
             best_target_square = None
             best_target_score = 0
@@ -148,10 +161,10 @@ class Game:
         plate1_img = cv2.medianBlur(plate1_img, 3)
         plate2_img = cv2.medianBlur(plate2_img, 3)
 
-        for i in range(0, 8):
-            for j in range(0, 8):
+        for row in range(0, 8):
+            for column in range(0, 8):
 
-                case_to_compare = (i, j)
+                case_to_compare = (row, column)
 
                 case1 = plate1.get_case_on_img(plate1_img, *case_to_compare)
                 case2 = plate2.get_case_on_img(plate2_img, *case_to_compare)
@@ -160,20 +173,34 @@ class Game:
                 case2 = cv2.cvtColor(case2, cv2.COLOR_BGR2GRAY)
 
                 resized1 = cv2.resize(
-                    case1, (10, 10), interpolation=cv2.INTER_AREA)
+                    case1, (20, 20), interpolation=cv2.INTER_AREA)
                 resized2 = cv2.resize(
-                    case2, (10, 10), interpolation=cv2.INTER_AREA)
+                    case2, (20, 20), interpolation=cv2.INTER_AREA)
 
                 array1 = resized1.astype(np.int16, copy=False)
                 array2 = resized2.astype(np.int16, copy=False)
 
-                array1 = array1[1:9, 1:9]
-                array2 = array2[1:9, 1:9]
+                array1 = array1[2:17, 2:17]
+                array2 = array2[2:17, 2:17]
 
-                diff = np.abs(np.subtract(array1, array2))
-                diff = np.ones(array1.shape)[diff > 25]
-                value = np.sum(diff)
+                hist1, bins = np.histogram(array1.ravel(), 10, [0, 256])
+                hist2, bins = np.histogram(array2.ravel(), 10, [0, 256])
 
-                values[i, j] = value
+                diff = np.abs(np.subtract(hist1, hist2))
+                score = np.sum(diff)
+
+                print("[coords]", row, column)
+                print("[Score]", score)
+
+                # fig, axs = plt.subplot_mosaic([
+                #     ['resized1', 'resized2']
+                # ], figsize=(7, 3.5))
+                # axs["resized1"].imshow(array1)
+                # axs["resized1"].set_title(f'Before ({row};{column})')
+                # axs["resized2"].imshow(array2)
+                # axs["resized2"].set_title(f'After ({row};{column})')
+                # plt.show()
+
+                values[row, column] = score
 
         return values

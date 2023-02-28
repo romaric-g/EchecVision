@@ -9,7 +9,7 @@ import cv2 as cv2
 # L'objectif est de maximiser ce nombre de case
 
 
-def find_cases_between_points(points, tolerance=.1):
+def find_cases_between_points(points, tolerance=.2):
     points = np.sort(points)
     departs = points.copy()
     max_p = np.max(points)
