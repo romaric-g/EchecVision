@@ -11,7 +11,7 @@ from functions.show_line import *
 from functions.contour_chessboard import *
 
 
-def get_chess_plate(source_img, ):
+def get_chess_plate(source_img, debug=False):
     size = 700
 
     image_ref = image_resize(source_img, height=size)
@@ -37,7 +37,7 @@ def get_chess_plate(source_img, ):
 
         try:
             # # On recuper les lignes presentes dans l'image
-            _lines = get_lines(_cropped_image.image, threshold=100)
+            _lines = get_lines(_cropped_image.image, threshold=110)
 
             if (len(_lines) <= max_lines):
                 continue
@@ -61,8 +61,9 @@ def get_chess_plate(source_img, ):
                 for i in j_lines:
                     show_line(cp, i, (0, 0, 255))
 
-                cv2.imshow("title", cp)
-                cv2.waitKey(0)
+                if debug:
+                    cv2.imshow("title", cp)
+                    cv2.waitKey(0)
 
         except:
             continue
@@ -106,6 +107,17 @@ def get_chess_plate(source_img, ):
 
     i_lines = segmented[0]
     j_lines = segmented[1]
+
+    if debug:
+        img_dst_copy = im_dst.copy()
+
+        for i in i_lines:
+            show_line(img_dst_copy, i, (0, 255, 0))
+        for j in j_lines:
+            show_line(img_dst_copy, j, (0, 0, 255))
+
+        cv2.imshow("im", img_dst_copy)
+        cv2.waitKey(0)
 
     # Les lignes detecté sont ici soit verticale, soit horizontale (homographie qui suit le plateau)
     # On cherches les points de croisement, si la ligne de croissement est parallele aux lignes, on inverse l'axe de croissement

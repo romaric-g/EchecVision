@@ -35,7 +35,7 @@ imlog = imlog + 1
 
 def log_change_map(change_map):
     img = (change_map / np.max(change_map)) * 255
-    plt.imshow(img, cmap='Greens', vmin=0, vmax=100)
+    plt.imshow(img, cmap='Greens', vmin=0, vmax=1)
     plt.show()
 
     export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/logs'
@@ -183,14 +183,52 @@ class Game:
                 array1 = array1[2:17, 2:17]
                 array2 = array2[2:17, 2:17]
 
-                hist1, bins = np.histogram(array1.ravel(), 10, [0, 256])
-                hist2, bins = np.histogram(array2.ravel(), 10, [0, 256])
+                hist1, bins1 = np.histogram(array1.ravel(), 8, [0, 256])
+                hist2, bins2 = np.histogram(array2.ravel(), 8, [0, 256])
+
+                filter = np.array([1, 1, 1])
+                mask = np.convolve(hist1, filter)
+                mask = mask[1:-1]
 
                 diff = np.abs(np.subtract(hist1, hist2))
-                score = np.sum(diff)
+                commun = np.minimum(hist1, hist2)
 
-                print("[coords]", row, column)
+                depassement = - mask + hist2
+                depassement[depassement < 0] = 0
+
+                score = np.sum(diff)
+                score2 = np.sum(commun)
+                score3 = np.sum(depassement)
+
+                print("---- hist1 ----")
+                print(hist1)
+                print("---- hist2 ----")
+                print(hist2)
+                print("diff", diff)
+                print("commun", commun)
+                print("commun", depassement)
+
+                # print(bins1, bins2)
+
+                # hist1[hist1 > 10] = 0
+                # hist2[hist1 > 10] = 0
+
                 print("[Score]", score)
+                print("[Score 2]", score2)
+                print("[Score 3]", score3)
+
+                # import matplotlib.pyplot as plt
+
+                # plt.subplot(121)
+                # plt.imshow(array1)
+
+                # plt.subplot(122)
+                # plt.imshow(array2)
+
+                # plt.show()
+
+                # print("[coords]", row, column)
+                # print("[Score]", score)
 
                 # fig, axs = plt.subplot_mosaic([
                 #     ['resized1', 'resized2']
@@ -201,6 +239,11 @@ class Game:
                 # axs["resized2"].set_title(f'After ({row};{column})')
                 # plt.show()
 
-                values[row, column] = score
+                values[row, column] = score3
 
-        return values
+        max_value = values.max() * 1.0
+
+        print(max_value)
+        print(values)
+
+        return (values.astype(float) / max_value)

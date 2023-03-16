@@ -1,3 +1,4 @@
+import time
 import os
 import numpy as np
 import cv2 as cv2
@@ -371,11 +372,57 @@ if __name__ == '__main__00':
 
 #     cv2.destroyAllWindows()
 
+if __name__ == "__main__00":
+    engine = chess.engine.SimpleEngine.popen_uci(
+        r"C:\Users\Romaric\DataScience\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
+    board = chess.Board()
 
-if __name__ == "__main__":
+    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/generated/v2/'
 
-    url = "http://10.112.91.130:8080/video"
-    cap = VideoCapture(url)
+    chess_plate = get_chess_plate(image_ref)
+
+    # chess_plate_img = chess_plate.get_chess_plate_img()
+
+    # sobel_64 = cv2.Sobel(chess_plate_img, cv2.CV_64F, 1, 0, ksize=3)
+    # abs_64 = np.absolute(sobel_64)
+    # sobel_8u = np.uint8(abs_64)
+
+    # for i in range(0, 8):
+    #     for j in range(0, 8):
+    #         case = chess_plate.get_case(i, j)
+    #         case_sobel = chess_plate.get_case_on_img(sobel_8u, i, j)
+
+    #         case_filename = "case_" + str(i) + "_" + str(j) + ".png"
+    #         case_sobel_filename = "case_" + \
+    #             str(i) + "_" + str(j) + "_sobel.png"
+
+    #         cv2.imwrite(os.path.join(export_path, case_filename), case)
+    #         cv2.imwrite(os.path.join(
+    #             export_path, case_sobel_filename), case_sobel)
+
+    for i in range(0, 100):
+        result = engine.play(board, chess.engine.Limit(time=0.1))
+        board.push(result.move)
+
+        print(board)
+        print("checkmate", board.is_checkmate)
+        time.sleep(2)
+
+if __name__ == '__main__':
+    frame = cv2.imread(
+        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis 2/9.jpg")
+
+    plate = get_chess_plate(frame, True)
+    plate.show()
+    cv2.waitKey(0)
+
+if __name__ == "__main__00":
+
+    # url = "http://10.112.91.130:8080/video"
+    # cap = VideoCapture(url)
+
+    cap = VideoCaptureImageSimulation(
+        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis 2/", 'jpg')
 
     played = input("Ready to start ?")
 

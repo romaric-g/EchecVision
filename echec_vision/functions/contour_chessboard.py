@@ -48,7 +48,7 @@ def get_cropped_object_from_contour(img, contour, padding=0):
     return CroppedImage(img, p_x, p_y, p_w, p_h)
 
 
-def find_best_cropped_chessboard(img):
+def find_best_cropped_chessboard(img, debug = False):
     contours = get_contours(img)
 
     max_lines = 0
@@ -57,8 +57,9 @@ def find_best_cropped_chessboard(img):
         cropped_img_ref, cropped_values, cropped_center = get_cropped_from_contour(
             img, contour)
 
-        cv2.imshow("cropped_img_ref", cropped_img_ref)
-        cv2.waitKey(0)
+        if debug:
+            cv2.imshow("cropped_img_ref", cropped_img_ref)
+            cv2.waitKey(0)
 
         try:
             # # On recuper les lignes presentes dans l'image

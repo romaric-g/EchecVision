@@ -30,3 +30,20 @@ class VideoCapture:
 
     def read(self):
         return self.q.get()
+
+
+
+class VideoCaptureImageSimulation:
+
+    def __init__(self, path, extension = 'png', first_idx = 1):
+        self.path = path
+        self.idx = first_idx - 1
+        self.extension = extension
+
+    def read(self):
+
+        self.idx = self.idx + 1
+
+        image_path = self.path + str(self.idx)  + '.' + self.extension
+
+        return cv2.imread(image_path)
