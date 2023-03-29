@@ -35,7 +35,7 @@ imlog = imlog + 1
 
 def log_change_map(change_map):
     img = (change_map / np.max(change_map)) * 255
-    plt.imshow(img, cmap='Greens', vmin=0, vmax=1)
+    plt.imshow(img, cmap='Greens', vmin=0, vmax=255)
     plt.show()
 
     export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/logs'
@@ -53,7 +53,8 @@ class Game:
 
     def play_from_plate(self, next_chess_plate: ChessPlate):
 
-        change_map = self.get_change_map(next_chess_plate)
+        change_map = get_change_map(
+            self.last_chess_plate, next_chess_plate)
 
         log_change_map(change_map)
 
@@ -148,102 +149,102 @@ class Game:
 
         return (best_move, best_move_score)
 
-    def get_change_map(self, next_chess_plate: ChessPlate):
 
-        values = np.zeros((8, 8))
+def get_change_map(last_chess_plate: ChessPlate, next_chess_plate: ChessPlate):
 
-        plate1 = self.last_chess_plate
-        plate2 = next_chess_plate
+    values = np.zeros((8, 8))
 
-        plate1_img = plate1.get_chess_plate_img()
-        plate2_img = plate2.get_chess_plate_img()
+    plate1 = last_chess_plate
+    plate2 = next_chess_plate
 
-        plate1_img = cv2.medianBlur(plate1_img, 3)
-        plate2_img = cv2.medianBlur(plate2_img, 3)
+    plate1_img = plate1.get_chess_plate_img()
+    plate2_img = plate2.get_chess_plate_img()
 
-        for row in range(0, 8):
-            for column in range(0, 8):
+    plate1_img = cv2.medianBlur(plate1_img, 3)
+    plate2_img = cv2.medianBlur(plate2_img, 3)
 
-                case_to_compare = (row, column)
+    for row in range(0, 8):
+        for column in range(0, 8):
 
-                case1 = plate1.get_case_on_img(plate1_img, *case_to_compare)
-                case2 = plate2.get_case_on_img(plate2_img, *case_to_compare)
+            case_to_compare = (row, column)
 
-                case1 = cv2.cvtColor(case1, cv2.COLOR_BGR2GRAY)
-                case2 = cv2.cvtColor(case2, cv2.COLOR_BGR2GRAY)
+            case1 = plate1.get_case_on_img(plate1_img, *case_to_compare)
+            case2 = plate2.get_case_on_img(plate2_img, *case_to_compare)
 
-                resized1 = cv2.resize(
-                    case1, (20, 20), interpolation=cv2.INTER_AREA)
-                resized2 = cv2.resize(
-                    case2, (20, 20), interpolation=cv2.INTER_AREA)
+            case1 = cv2.cvtColor(case1, cv2.COLOR_BGR2GRAY)
+            case2 = cv2.cvtColor(case2, cv2.COLOR_BGR2GRAY)
 
-                array1 = resized1.astype(np.int16, copy=False)
-                array2 = resized2.astype(np.int16, copy=False)
+            resized1 = cv2.resize(
+                case1, (20, 20), interpolation=cv2.INTER_AREA)
+            resized2 = cv2.resize(
+                case2, (20, 20), interpolation=cv2.INTER_AREA)
 
-                array1 = array1[2:17, 2:17]
-                array2 = array2[2:17, 2:17]
+            array1 = resized1.astype(np.int16, copy=False)
+            array2 = resized2.astype(np.int16, copy=False)
 
-                hist1, bins1 = np.histogram(array1.ravel(), 8, [0, 256])
-                hist2, bins2 = np.histogram(array2.ravel(), 8, [0, 256])
+            array1 = array1[2:17, 2:17]
+            array2 = array2[2:17, 2:17]
 
-                filter = np.array([1, 1, 1])
-                mask = np.convolve(hist1, filter)
-                mask = mask[1:-1]
+            hist1, bins1 = np.histogram(array1.ravel(), 8, [0, 256])
+            hist2, bins2 = np.histogram(array2.ravel(), 8, [0, 256])
 
-                diff = np.abs(np.subtract(hist1, hist2))
-                commun = np.minimum(hist1, hist2)
+            filter = np.array([1, 1, 1])
 
-                depassement = - mask + hist2
-                depassement[depassement < 0] = 0
+            mask1 = np.convolve(hist1, filter)
+            mask1 = mask1[1:-1]
 
-                score = np.sum(diff)
-                score2 = np.sum(commun)
-                score3 = np.sum(depassement)
+            mask2 = np.convolve(hist2, filter)
+            mask2 = mask2[1:-1]
 
-                print("---- hist1 ----")
-                print(hist1)
-                print("---- hist2 ----")
-                print(hist2)
-                print("diff", diff)
-                print("commun", commun)
-                print("commun", depassement)
+            diff = np.abs(np.subtract(hist1, hist2))
+            commun = np.minimum(hist1, hist2)
 
-                # print(bins1, bins2)
+            depassement = - hist1 - mask1 + hist2 + mask2
+            depassement[depassement < 0] = 0
 
-                # hist1[hist1 > 10] = 0
-                # hist2[hist1 > 10] = 0
+            score = np.sum(diff)
+            score2 = np.sum(commun)
+            score3 = np.sum(depassement)
 
-                print("[Score]", score)
-                print("[Score 2]", score2)
-                print("[Score 3]", score3)
+            # print("---- hist1 ----")
+            # print(hist1)
+            # print("---- hist2 ----")
+            # print(hist2)
+            # print("diff", diff)
+            # print("commun", commun)
+            # print("commun", depassement)
 
-                # import matplotlib.pyplot as plt
+            # print(bins1, bins2)
 
-                # plt.subplot(121)
-                # plt.imshow(array1)
+            # hist1[hist1 > 10] = 0
+            # hist2[hist1 > 10] = 0
 
-                # plt.subplot(122)
-                # plt.imshow(array2)
+            # print("[Score]", score)
+            # print("[Score 2]", score2)
+            # print("[Score 3]", score3)
 
-                # plt.show()
+            # import matplotlib.pyplot as plt
 
-                # print("[coords]", row, column)
-                # print("[Score]", score)
+            # plt.subplot(121)
+            # plt.imshow(array1)
 
-                # fig, axs = plt.subplot_mosaic([
-                #     ['resized1', 'resized2']
-                # ], figsize=(7, 3.5))
-                # axs["resized1"].imshow(array1)
-                # axs["resized1"].set_title(f'Before ({row};{column})')
-                # axs["resized2"].imshow(array2)
-                # axs["resized2"].set_title(f'After ({row};{column})')
-                # plt.show()
+            # plt.subplot(122)
+            # plt.imshow(array2)
 
-                values[row, column] = score3
+            # plt.show()
 
-        max_value = values.max() * 1.0
+            # print("[coords]", row, column)
+            # print("[Score]", score)
 
-        print(max_value)
-        print(values)
+            # fig, axs = plt.subplot_mosaic([
+            #     ['resized1', 'resized2']
+            # ], figsize=(7, 3.5))
+            # axs["resized1"].imshow(array1)
+            # axs["resized1"].set_title(f'Before ({row};{column})')
+            # axs["resized2"].imshow(array2)
+            # axs["resized2"].set_title(f'After ({row};{column})')
+            # plt.show()
 
-        return (values.astype(float) / max_value)
+            values[row, column] = score3
+
+    return values.astype(float)

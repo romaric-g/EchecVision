@@ -1,4 +1,5 @@
 import cv2 as cv2
+import numpy as np
 
 
 def get_max_contour(contours):
@@ -32,4 +33,17 @@ def filter_and_order_contours(contours, min_area, order=True):
             areas.append(area)
             new_contours.append(cnt)
 
-    return [x for _, x in sorted(zip(areas, new_contours), reverse=order)]
+    # new_contours = np.array(new_contours)
+    # areas = np.array(areas)
+
+    # if order:
+    #     inds = (-areas).argsort()[:areas.size-1]
+    # else:
+    #     inds = areas.argsort()
+
+    # sorted_contours = new_contours[inds]
+
+    # a = [*sorted_contours]
+
+    # return a
+    return [x for _, x in sorted(zip(areas, new_contours), key=lambda a: a[0], reverse=order)]

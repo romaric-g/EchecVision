@@ -48,7 +48,7 @@ def get_cropped_object_from_contour(img, contour, padding=0):
     return CroppedImage(img, p_x, p_y, p_w, p_h)
 
 
-def find_best_cropped_chessboard(img, debug = False):
+def find_best_cropped_chessboard(img, debug=False):
     contours = get_contours(img)
 
     max_lines = 0

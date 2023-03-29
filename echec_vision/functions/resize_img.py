@@ -1,13 +1,15 @@
 import cv2 as cv2
 
-def resize_img(img, size = 700):
+
+def resize_img(img, size=700):
     width = size
     height = size
     dim = (width, height)
 
-    return cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+    return cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
 
-def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
+
+def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
     # initialize the dimensions of the image to be resized and
     # grab the image size
     dim = None
@@ -33,7 +35,7 @@ def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
         dim = (width, int(h * r))
 
     # resize the image
-    resized = cv2.resize(image, dim, interpolation = inter)
+    resized = cv2.resize(image, dim, interpolation=inter)
 
     # return the resized image
     return resized

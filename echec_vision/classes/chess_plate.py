@@ -62,3 +62,6 @@ class ChessPlate:
 
         case = img[row_start:row_end, col_start:col_end]
         return resize_img(case, 200)
+
+    def is_valide(self):
+        return self.col_coords.shape[0] == 9 and self.row_coords.shape[0] == 9

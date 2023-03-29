@@ -15,8 +15,7 @@ def find_cases_between_points(points, tolerance=.2):
     max_p = np.max(points)
 
     # On defini le depart sur le point 0
-    s = 0
-    points = np.insert(points, 0, s)
+    s = points[0]
 
     # print(points)
 
@@ -79,6 +78,11 @@ def find_cases_between_points(points, tolerance=.2):
         # print("ect_norm_divisor with added case", ect_norm_divisor)
 
         # =============================
+        # Le meilleur point de depart ne garanti pas que toutes les lignes puissent être inclus dans la grille, si ce n'est pas le cas,
+        # if first_point_idx + np.sum(max_ect_norm_divisor) + 1 <= len(points):
+        #     break
+
+        # =============================
         # On vient comparer notre resultat avec les prevedents
 
         if np.sum(max_ect_norm_divisor) <= np.sum(ect_norm_divisor):
@@ -99,8 +103,8 @@ def find_cases_between_points(points, tolerance=.2):
             break
 
         # Sinon, on chnage le point de depart
-        s = departs[0]
         departs = departs[1:]
+        s = departs[0]
 
         idx = idx + 1
 

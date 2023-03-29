@@ -11,6 +11,10 @@ def get_interpolate_coord(points):
     max_s_find, max_ect_norm_divisor, first_point_idx = find_cases_between_points(
         points)
 
+    # TEST !!
+    # while first_point_idx + np.sum(max_ect_norm_divisor) + 1 <= len(points):
+    #     first_point_idx = len(points) - 1
+
     coord = [max_s_find]
 
     # print("---- get_interpolate_coord ----")
@@ -21,7 +25,7 @@ def get_interpolate_coord(points):
         if nbr_case == 0:
             continue
 
-        current_idx = first_point_idx + i
+        current_idx = first_point_idx + i + 1
         current_point = points[current_idx]
 
         # print("current_idx", current_idx)

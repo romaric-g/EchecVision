@@ -10,6 +10,10 @@ from skimage.metrics import structural_similarity
 from classes.game import *
 from classes.video_capture import *
 from classes.image_logger import *
+from classes.chess_board_extractor import ChessBoardExtractor
+from classes.sequence import Sequence
+from functions.images.difference import *
+
 
 
 def difference(frame1_source, frame2_source):
@@ -151,101 +155,6 @@ def main(image_path='./images/sources/2.jpg'):
     # cv2.imwrite(os.path.join(export_path, "source.png"), image_ref)
 
 
-def get_change_map():
-
-    frame1 = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis/1.png")
-    frame2 = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis/2.png")
-
-    # difference(frame1, frame2)
-
-    values = np.zeros((8, 8))
-
-    plate1 = get_chess_plate(frame1)
-    plate2 = get_chess_plate(frame2)
-
-    plate1_img = plate1.get_chess_plate_img()
-    plate2_img = plate2.get_chess_plate_img()
-
-    plate1_img = cv2.medianBlur(plate1_img, 3)
-    plate2_img = cv2.medianBlur(plate2_img, 3)
-
-    for i in range(0, 8):
-        for j in range(0, 8):
-
-            case_to_compare = (i, j)
-
-            case1 = plate1.get_case_on_img(plate1_img, *case_to_compare)
-            case2 = plate2.get_case_on_img(plate2_img, *case_to_compare)
-
-            case1 = cv2.cvtColor(case1, cv2.COLOR_BGR2GRAY)
-            case2 = cv2.cvtColor(case2, cv2.COLOR_BGR2GRAY)
-
-            # cv2.imshow('case 1', case1)
-            # cv2.imshow('case 2', case2)
-
-            resized1 = cv2.resize(
-                case1, (10, 10), interpolation=cv2.INTER_AREA)
-            resized2 = cv2.resize(
-                case2, (10, 10), interpolation=cv2.INTER_AREA)
-
-            array1 = resized1.astype(np.int16, copy=False)
-            array2 = resized2.astype(np.int16, copy=False)
-
-            array1 = array1[1:9, 1:9]
-            array2 = array2[1:9, 1:9]
-
-            # minref = array1.min()
-            # maxref = array1.max()
-
-            # array1 = (array1 - minref) / (maxref - minref)
-            # array2 = (array2 - minref) / (maxref - minref)
-
-            diff = np.abs(np.subtract(array1, array2))
-
-            diff = np.ones(array1.shape)[diff > 25]
-
-            # print(diff)
-
-            value = np.sum(diff)
-
-            values[i, j] = value
-
-            print("[value]", value)
-
-            # fig, axs = plt.subplots(3)
-            # im = axs[0].pcolor(array1, cmap=plt.cm.Blues)
-            # im = axs[1].pcolor(array2, cmap=plt.cm.Blues)
-            # im = axs[2].pcolor(diff, cmap=plt.cm.Blues)
-
-            # plt.show()
-
-            # cv2.waitKey()
-
-    return values
-    # fig, ax = plt.subplots()
-    # ax.pcolor(values, cmap=plt.cm.Blues)
-    # plt.show()
-    # cv2.waitKey()
-
-    # print("Test type", arr.dtype)
-
-    # print("My type", array1.dtype)
-    # print("array1", array1)
-    # print("array2", array2)
-    # print("diff", diff)
-
-    # fig, axs = plt.subplots(3)
-    # im = axs[0].pcolor(array1, cmap=plt.cm.Blues)
-    # im = axs[1].pcolor(array2, cmap=plt.cm.Blues)
-    # im = axs[2].pcolor(diff, cmap=plt.cm.Blues)
-
-    # plt.show()
-
-    # cv2.waitKey()
-
-
 def find_best_moove_from_change_map(change_map):
 
     ind = np.unravel_index(np.argsort(change_map, axis=None), change_map.shape)
@@ -372,49 +281,6 @@ if __name__ == '__main__00':
 
 #     cv2.destroyAllWindows()
 
-if __name__ == "__main__00":
-    engine = chess.engine.SimpleEngine.popen_uci(
-        r"C:\Users\Romaric\DataScience\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
-    board = chess.Board()
-
-    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/generated/v2/'
-
-    chess_plate = get_chess_plate(image_ref)
-
-    # chess_plate_img = chess_plate.get_chess_plate_img()
-
-    # sobel_64 = cv2.Sobel(chess_plate_img, cv2.CV_64F, 1, 0, ksize=3)
-    # abs_64 = np.absolute(sobel_64)
-    # sobel_8u = np.uint8(abs_64)
-
-    # for i in range(0, 8):
-    #     for j in range(0, 8):
-    #         case = chess_plate.get_case(i, j)
-    #         case_sobel = chess_plate.get_case_on_img(sobel_8u, i, j)
-
-    #         case_filename = "case_" + str(i) + "_" + str(j) + ".png"
-    #         case_sobel_filename = "case_" + \
-    #             str(i) + "_" + str(j) + "_sobel.png"
-
-    #         cv2.imwrite(os.path.join(export_path, case_filename), case)
-    #         cv2.imwrite(os.path.join(
-    #             export_path, case_sobel_filename), case_sobel)
-
-    for i in range(0, 100):
-        result = engine.play(board, chess.engine.Limit(time=0.1))
-        board.push(result.move)
-
-        print(board)
-        print("checkmate", board.is_checkmate)
-        time.sleep(2)
-
-if __name__ == '__main__':
-    frame = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis 2/9.jpg")
-
-    plate = get_chess_plate(frame, True)
-    plate.show()
-    cv2.waitKey(0)
 
 if __name__ == "__main__00":
 
@@ -422,17 +288,17 @@ if __name__ == "__main__00":
     # cap = VideoCapture(url)
 
     cap = VideoCaptureImageSimulation(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis 2/", 'jpg')
+        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Video test full image/", 'png')
 
     played = input("Ready to start ?")
 
     frame = cap.read()
 
-    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/logs'
+    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/logs_video_sequence'
     img_logger = ImageLogger(export_path)
     cropped_logger = ImageLogger(export_path, 'cropped')
 
-    initial_plate = get_chess_plate(frame)
+    initial_plate = get_chess_plate(frame, True)
 
     img_logger.log(frame)
     cropped_logger.log(initial_plate.plate_img)
@@ -453,7 +319,7 @@ if __name__ == "__main__00":
         played = input("Press Enter to confirm your play...")
 
         frame = cap.read()
-        plate = get_chess_plate(frame)
+        plate = get_chess_plate(standard(frame), True)
 
         img_logger.log(frame)
         cropped_logger.log(plate.plate_img)
@@ -472,7 +338,7 @@ if __name__ == "__main__00":
         played = input("Press Enter to confirm you report IA's play...")
 
         frame = cap.read()
-        plate = get_chess_plate(frame)
+        plate = get_chess_plate(standard(frame), True)
 
         img_logger.log(frame)
         cropped_logger.log(plate.plate_img)
@@ -486,6 +352,91 @@ if __name__ == "__main__00":
     engine.quit()
     cap.release()
     cv2.destroyAllWindows()
+
+
+if __name__ == "__main__00":
+
+    # url = "http://10.112.91.130:8080/video"
+    url = "Vidéo partie échec.mp4"
+    # VideoCapture
+    cap = cv2.VideoCapture(url)
+
+    # cap = VideoCaptureImageSimulation(
+    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis 2/", 'jpg')
+
+    previous_plate = None
+
+    if (cap.isOpened() == False):
+        print("Error opening video stream or file")
+
+    i = 0
+
+    while(cap.isOpened()):
+        _, frame = cap.read()
+
+        if frame is None:
+            continue
+
+        plate = get_chess_plate(standard(frame))
+
+        if not plate.is_valide():
+            continue
+
+        if i % 10 == 0:
+            cv2.imshow("Video", frame)
+
+            if cv2.waitKey(1) & 0xFF == 27:
+                break
+
+        previous_plate = plate
+        i = i + 1
+
+if __name__ == "__main__00":
+
+    # url = "http://10.112.91.130:8080/video"
+    url = "Vidéo partie échec.mp4"
+    # VideoCapture
+    cap = cv2.VideoCapture(url)
+
+    # cap = VideoCaptureImageSimulation(
+    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis 2/", 'jpg')
+
+    previous_plate = None
+
+    if (cap.isOpened() == False):
+        print("Error opening video stream or file")
+
+    i = 0
+
+    while(cap.isOpened()):
+        _, frame = cap.read()
+
+        if frame is None:
+            continue
+
+        plate = get_chess_plate(standard(frame))
+
+        if i % 10 == 0 and previous_plate != None and previous_plate.is_valide() and plate.is_valide():
+            change_map = get_change_map(previous_plate, plate)
+            score = np.sum(change_map)
+
+            print("[SCORE]", score)
+
+            img = (change_map / np.max(change_map)) * 255
+            img = img.astype(dtype=np.uint8)
+
+            # print("img", img)
+
+            a = cv2.resize(img, (256, 256), interpolation=cv2.INTER_NEAREST)
+
+            cv2.imshow("Map", a)
+            cv2.imshow("Video", plate.plate_img)
+
+            if cv2.waitKey(1) & 0xFF == 27:
+                break
+
+        previous_plate = plate
+        i = i + 1
 
     # frame1 = cv2.imread(
     #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Suivis 2/1.jpg")
@@ -561,3 +512,67 @@ if __name__ == "__main__00":
 # 4 : Rook
 # 5 : Queen
 # 6 : King
+
+
+
+
+
+if __name__ == "__main__":
+    url = "Vidéo partie échec.mp4"
+    cap = cv2.VideoCapture(url)
+
+    last_extractor: ChessBoardExtractor = None
+
+    # MOOV | STOP | FIX
+    state = "FIX"
+
+    moov_sequence = Sequence(10, 1)
+    stop_sequence = Sequence(3)
+    fix_sequence = Sequence(5, 1)
+
+    def get_sequence(state):
+        if state == "MOOV":
+            return moov_sequence
+        if state == "STOP":
+            return stop_sequence
+        if state == "FIX":
+            return fix_sequence
+        return None
+
+    while(cap.isOpened()):
+        _, frame = cap.read()
+
+        if frame is None:
+            continue
+
+        extractor = ChessBoardExtractor(frame)
+      
+        if last_extractor != None:
+            h = last_extractor.h, 
+
+            print(h)
+
+            a = cv2.warpPerspective(last_extractor.standard_image, *h, (700, 700))
+            b = cv2.warpPerspective(extractor.standard_image, *h, (size, size))
+
+            show_difference(a, b)
+
+            # b_new = imutils.resize(b, height=600)
+
+            # score = compute_difference_score(a, b, 10000)
+        
+            # color = (0, 255, 0) if score > 250 else (0, 0, 255)
+            # image = cv2.putText(b_new, str(score), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 
+            #        1, color, 2, cv2.LINE_AA)
+
+            # cv2.imshow("image", image)
+            # cv2.waitKey(1)
+
+
+        plate = extractor.extract()   
+
+        if plate.is_valide():
+            last_extractor = extractor
+
+
+        

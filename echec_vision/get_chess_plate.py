@@ -10,12 +10,15 @@ from classes.chess_plate import *
 from functions.show_line import *
 from functions.contour_chessboard import *
 
+size = 700
 
-def get_chess_plate(source_img, debug=False):
-    size = 700
 
-    image_ref = image_resize(source_img, height=size)
-    image_shape = image_ref.shape
+def standard(image):
+    return image_resize(image, height=size)
+
+
+def get_center(image):
+    image_shape = image.shape
 
     # print("Shape", image_shape)
     center = np.array([image_shape[0], image_shape[1]]).astype(np.double)
@@ -23,19 +26,18 @@ def get_chess_plate(source_img, debug=False):
     center = center.astype(np.int)
     center = tuple(center)
 
-    contours = get_contours(image_ref)
+    return center
 
-    # Previous version
-    # cropped_img_ref, cropped_values, cropped_center = get_cropped_img_from_max_contour(
-    #     image_ref)
 
+def get_cropped_plate_image(standard_image, debug=False):
+    contours = get_contours(standard_image)
     max_lines = 0
 
     for contour in contours:
-        _cropped_image = get_cropped_object_from_contour(
-            image_ref, contour, padding=10)
-
         try:
+            _cropped_image = get_cropped_object_from_contour(
+                standard_image, contour, padding=10)
+
             # # On recuper les lignes presentes dans l'image
             _lines = get_lines(_cropped_image.image, threshold=110)
 
@@ -54,19 +56,27 @@ def get_chess_plate(source_img, debug=False):
                 cropped_image = _cropped_image
                 max_lines = len(_lines)
 
-                cp = cropped_image.image.copy()
-
-                for i in i_lines:
-                    show_line(cp, i, (0, 255, 0))
-                for i in j_lines:
-                    show_line(cp, i, (0, 0, 255))
-
                 if debug:
+
+                    cp = cropped_image.image.copy()
+
+                    for i in i_lines:
+                        show_line(cp, i, (0, 255, 0))
+                    for i in j_lines:
+                        show_line(cp, i, (0, 0, 255))
+
                     cv2.imshow("title", cp)
                     cv2.waitKey(0)
 
         except:
             continue
+
+    return cropped_image
+
+
+def get_chess_plate(cropped_image: CroppedImage, debug=False) -> ChessPlate:
+    standard_image = cropped_image.image_source
+    center = get_center(standard_image)
 
     # On utilise les points de croisements de toute les lignes sur une lignes de reference pour trouver la premiere et la derniere
     # Par default, on definit :
@@ -98,7 +108,7 @@ def get_chess_plate(source_img, debug=False):
     dst = np.array([[0, 0], [size, 0], [0, size], [size, size]])
 
     h, status = cv2.findHomography(src, dst)
-    im_dst = cv2.warpPerspective(image_ref, h, (size, size))
+    im_dst = cv2.warpPerspective(standard_image, h, (size, size))
 
     # On recherche des lignes dans la nouvelle image
 
@@ -134,6 +144,9 @@ def get_chess_plate(source_img, debug=False):
     # On extrait la taille du plateau
     im_dst_w = im_dst.shape[0]
     im_dst_h = im_dst.shape[1]
+
+    v_points = np.insert(v_points, 0, 0)
+    h_points = np.insert(h_points, 0, 0)
 
     # On insert un point maximum à la liste des points (permet de detecter la derniere ligne du plateau)
     v_points = np.insert(v_points, len(v_points), im_dst_w)

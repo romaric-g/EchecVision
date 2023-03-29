@@ -12,6 +12,7 @@ class CroppedImage():
         self.values = (x, y, w, h)
 
     def get_center(self):
-        return  (int(self.w/2), int(self.h/2))
+        return (int(self.w/2), int(self.h/2))
 
-    
+    def crop_like(self, image):
+        return CroppedImage(image, self.x, self.y, self.w, self.h)
