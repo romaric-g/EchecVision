@@ -66,10 +66,13 @@ class ChessBoardExtractor():
             except:
                 continue
 
-    def extract(self) -> ChessPlate:
+    def extract(self) -> ChessPlate or None:
 
         if self.chess_plate != None:
             return self.chess_plate
+
+        if self.cropped_image == None:
+            return ChessPlate(None, [], [])
 
         # On utilise les points de croisements de toute les lignes sur une lignes de reference pour trouver la premiere et la derniere
         # Par default, on definit :
@@ -104,8 +107,6 @@ class ChessBoardExtractor():
 
         self.h = h.copy()
 
-        print(h)
-        print(self.h)
         im_dst = cv2.warpPerspective(self.standard_image, h, (size, size))
 
         # On recherche des lignes dans la nouvelle image
@@ -113,8 +114,8 @@ class ChessBoardExtractor():
         lines = get_lines(im_dst, threshold=110)
         segmented = segment_by_angle_kmeans(lines)
 
-        i_lines = segmented[0]
-        j_lines = segmented[1]
+        i_lines = segmented[0] if len(segmented) > 0 else []
+        j_lines = segmented[1] if len(segmented) > 1 else []
 
         center = get_center(self.standard_image)
         # Les lignes detecté sont ici soit verticale, soit horizontale (homographie qui suit le plateau)

@@ -5,6 +5,7 @@ import numpy as np
 import cv2 as cv2
 from classes.chess_plate import *
 from matplotlib import pyplot as plt
+from classes.image_logger import ImageLogger
 
 
 class WHILE_LINE_POSITION(Enum):
@@ -32,15 +33,16 @@ def get_board_square(i, j, while_line_position):
 imlog = 0
 imlog = imlog + 1
 
+map_logger = ImageLogger(
+    'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_map', "map")
+
 
 def log_change_map(change_map):
     img = (change_map / np.max(change_map)) * 255
-    plt.imshow(img, cmap='Greens', vmin=0, vmax=255)
-    plt.show()
+    # plt.imshow(img, cmap='Greens', vmin=0, vmax=255)
+    # plt.show()
 
-    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/logs'
-
-    cv2.imwrite(os.path.join(export_path, f'{imlog}_map.png'), img)
+    map_logger.log(img)
 
 
 class Game:
@@ -51,8 +53,10 @@ class Game:
         self.board = chess.Board()
         self.last_chess_plate = chess_plate
 
-    def play_from_plate(self, next_chess_plate: ChessPlate):
+    def is_player_turn(self):
+        return self.board.turn == chess.WHITE
 
+    def play_from_plate(self, next_chess_plate: ChessPlate):
         change_map = get_change_map(
             self.last_chess_plate, next_chess_plate)
 
