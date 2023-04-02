@@ -141,41 +141,42 @@ if __name__ == "__main__":
         # Count for unvalide plate sequence
         chess_plate = current_extractor.extract()
 
-        if not chess_plate.is_valide():
+        if chess_plate == None or not chess_plate.is_valide():
             unvalide_plate_time = unvalide_plate_time + diff_time
         else:
             last_valid_plate = chess_plate
             unvalide_plate_time = 0
 
-        # Long moov detected
-        if relative_moov_time >= LM__MIN_RELATIVE_MOOV:
-            long_moov_detected = True
+            # Long moov detected
+            if relative_moov_time >= LM__MIN_RELATIVE_MOOV:
+                long_moov_detected = True
 
-        #  or game.board.turn == chess.BLACK
-        if (absolute_moov_time > NS__MIN_ABSOLUTE_MOOV) and relative_fix_time >= NS__MIN_RELATIVE_FIX and chess_plate.is_valide() and long_moov_detected:
+            #  or game.board.turn == chess.BLACK
+            if (absolute_moov_time > NS__MIN_ABSOLUTE_MOOV) and relative_fix_time >= NS__MIN_RELATIVE_FIX and long_moov_detected:
 
-            if game.is_player_turn():
-                game.play_from_plate(chess_plate)
+                if game.is_player_turn():
+                    game.play_from_plate(chess_plate)
 
-                img_logger.log(frame)
-                cropped_logger.log(chess_plate.plate_img)
+                    img_logger.log(frame)
+                    cropped_logger.log(chess_plate.plate_img)
 
-                print("Player has played : ")
-                print(game.board)
+                    print("Player has played : ")
+                    print(game.board)
 
-                result = engine.play(game.board, chess.engine.Limit(time=0.1))
+                    result = engine.play(
+                        game.board, chess.engine.Limit(time=0.1))
 
-                print("L'IA decide de joué le coup : ", result.move)
-                print("Vous devez reporter le coup sur le plateau !")
+                    print("L'IA decide de joué le coup : ", result.move)
+                    print("Vous devez reporter le coup sur le plateau !")
 
-            else:
+                else:
 
-                game.play_from_move(result.move, chess_plate)
+                    game.play_from_move(result.move, chess_plate)
 
-                print("Le coup de l'IA a été reporté sur le plateau :")
-                print(game.board)
+                    print("Le coup de l'IA a été reporté sur le plateau :")
+                    print(game.board)
 
-            new_state(current_extractor)
+                new_state(current_extractor)
 
         # Affichage
 

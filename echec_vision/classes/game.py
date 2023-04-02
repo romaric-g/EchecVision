@@ -66,9 +66,6 @@ class Game:
 
             move1, s1 = self.find_best_move(
                 change_map, WHILE_LINE_POSITION.FIRST_ROW)
-
-            # Va poser des problemes ?
-
             move2, s2 = self.find_best_move(
                 change_map, WHILE_LINE_POSITION.LAST_ROW)
             move3, s3 = self.find_best_move(
