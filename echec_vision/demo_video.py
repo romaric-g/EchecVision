@@ -64,7 +64,7 @@ if __name__ == "__main__":
     last_time = time.time()
     frame = cap.read()
 
-    log_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_demo_video'
+    log_path = 'C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_demo_video'
     img_logger = ImageLogger(log_path)
     cropped_logger = ImageLogger(log_path, 'cropped')
 

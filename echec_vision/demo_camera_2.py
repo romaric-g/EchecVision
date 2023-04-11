@@ -6,34 +6,28 @@ import chess.engine
 from core.camera.video_capture import VideoTimeSimultation
 from core.movement.detector import MoveDetector
 from core.utils.image_logger import ImageLogger
-
+from core.camera.video_capture import VideoCapture
 
 if __name__ == "__main__":
 
     # Create a VideoCapture object and read from input file
-    cap = VideoTimeSimultation('Vidéo partie échec.mp4', 30)
-    cap.start()
+    # Create a VideoCapture object and read from input file
+    # url = "http://10.112.91.130:8080/video"
+    url = "http://172.20.10.11:8080/video"
+    cap = VideoCapture(url)
 
     played = input("Ready to start ?")
 
-    log_path = 'C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_demo_video'
+    log_path = 'C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_demo_camera'
 
     move_detector = MoveDetector(log_path)
 
-    moovs = [
-        chess.Move(chess.C7, chess.C5),
-        chess.Move(chess.G8, chess.F6),
-        chess.Move(chess.F6, chess.E4),
-        chess.Move(chess.B8, chess.C6),
-        chess.Move(chess.G7, chess.G5),
-    ]
-
     # Read until video is completed
-    while(cap.isOpened()):
+    while(True):
 
         # Capture frame-by-frame
-        ret, frame = cap.read()
-        if not ret:
+        frame = cap.read()
+        if frame is None:
             continue
 
         move_detector.next_frame(frame, debug=True)

@@ -34,7 +34,7 @@ imlog = 0
 imlog = imlog + 1
 
 map_logger = ImageLogger(
-    'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_map', "map")
+    'C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_map', "map")
 
 
 def log_change_map(change_map):

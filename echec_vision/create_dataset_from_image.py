@@ -8,7 +8,7 @@ from classes.image_logger import *
 
 
 def main(image_path, dataset_name):
-    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/generated/' + dataset_name
+    export_path = 'C:/Users/Romaric/DataScience/EchecsVision/echec_vision/generated/' + dataset_name
 
     image_ref = cv2.imread(image_path)
 

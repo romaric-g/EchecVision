@@ -1,4 +1,4 @@
-# Echecs vision
+# EchecsVision
 
 Le but de ce projet est de créer un système capable de suivre les déplacements sur un
 plateau d’échecs à l’aide d’une caméra, c’est-à-dire enregistrer un à un les coups joués sur un plateau

@@ -21,7 +21,7 @@ def main(image_path='./images/sources/2.jpg'):
         './images/sources/13.jpg',
     ]
 
-    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/generated/datasets_2'
+    export_path = 'C:/Users/Romaric/DataScience/EchecsVision/echec_vision/generated/datasets_2'
 
     image_ref = cv2.imread(image_path)
 

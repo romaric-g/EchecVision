@@ -18,29 +18,29 @@ from functions.images.difference import *
 
 if __name__ == '__main__00':
     frame0 = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/0.png")
+        "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/0.png")
     frame1 = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/1.png")
+        "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/1.png")
     frame2 = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/2.png")
+        "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/2.png")
     frame3 = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/3.png")
+        "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/3.png")
     frame4 = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/4.png")
+        "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/4.png")
     frame5 = cv2.imread(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/5.png")
+        "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/5.png")
     # frame6 = cv2.imread(
-    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/6.png")
+    #     "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/6.png")
     # frame7 = cv2.imread(
-    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/7.png")
+    #     "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/7.png")
     # frame8 = cv2.imread(
-    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/8.png")
+    #     "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/8.png")
     # frame9 = cv2.imread(
-    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/9.png")
+    #     "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/9.png")
     # frame10 = cv2.imread(
-    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/10.png")
+    #     "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/10.png")
     # frame11 = cv2.imread(
-    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/log_saves/plate_change_orientation/11.png")
+    #     "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_saves/plate_change_orientation/11.png")
 
     # Init
 
@@ -111,7 +111,7 @@ if __name__ == '__main__00':
 
 # if __name__ == '__main__':
 #     frame1 = cv2.imread(
-#         "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/difference/1.png")
+#         "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/difference/1.png")
 
 #     plate1 = get_chess_plate(frame1)
 #     plate1.show()
@@ -139,13 +139,13 @@ if __name__ == "__main__00":
     # cap = VideoCapture(url)
 
     cap = VideoCaptureImageSimulation(
-        "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Video test full image/", 'png')
+        "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/Video test full image/", 'png')
 
     played = input("Ready to start ?")
 
     frame = cap.read()
 
-    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/logs_video_sequence'
+    export_path = 'C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/logs_video_sequence'
     img_logger = ImageLogger(export_path)
     cropped_logger = ImageLogger(export_path, 'cropped')
 

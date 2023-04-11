@@ -20,13 +20,13 @@ if __name__ == "__main__":
     cap = VideoCapture(url)
 
     # cap = VideoCaptureImageSimulation(
-    #     "C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/Video test full image/", 'png')
+    #     "C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/Video test full image/", 'png')
 
     played = input("Ready to start ?")
 
     frame = cap.read()
 
-    export_path = 'C:/Users/Romaric/DataScience/Echecs Vision/echec_vision/images/logs_video_sequence'
+    export_path = 'C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/logs_video_sequence'
     img_logger = ImageLogger(export_path)
     cropped_logger = ImageLogger(export_path, 'cropped')
 
