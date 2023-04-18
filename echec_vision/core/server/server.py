@@ -1,22 +1,39 @@
-import eventlet
+#import eventlet
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
+import threading
 from flask_cors import CORS
-from core.server.types import GameLog
+from core.server.connector import connector
 from core.session import session
 import time
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 CORS(app, resources={r"/*": {"origins": "*"}})
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
-eventlet.monkey_patch()
+#socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+# eventlet.monkey_patch()
 
 
 @app.route("/http-call")
 def http_call():
     """return JSON with string data as the value"""
     data = {'data': 'This text was fetched using an HTTP call to server on render'}
+    return jsonify(data)
+
+
+@app.route("/init")
+def init_call():
+    data = {
+        'game_logs': connector.game_logs_dumps,
+        'chess_board_state': connector.chess_board_state_dumps,
+        'url': connector.get_session().url,
+        'url_connected': connector.get_session().url_connected,
+        'url_error': connector.get_session().url_error,
+        'is_pause': connector.get_session().is_pause,
+        'is_start': connector.get_session().is_start,
+
+    }
     return jsonify(data)
 
 
@@ -36,10 +53,13 @@ def handle_message(data):
 
 
 @socketio.on('start')
-def handle_start(data):
+def handle_start():
     """event listener when client start game"""
     try:
-        socketio.start_background_task(session.start)
+        print("START !!!")
+        # socketio.start_background_task(session.start)
+        session.start()
+
     except:
         print("Error on starting game")
 
@@ -63,7 +83,7 @@ def handle_resume(data):
 
 
 @socketio.on('stop')
-def handle_resume(data):
+def handle_resume():
     """event listener when client stop game"""
     try:
         session.stop()

@@ -12,25 +12,28 @@ from core.plate.plate import Plate
 def extract_plate(standard_image):
     size = standard_image.shape[0]
 
-    cropped_image, crop_values, segmented_lines = extract_the_significant_cropimage(
-        standard_image)
-
-    if cropped_image is None:
-        return None
-
-    h = extract_homography(cropped_image, crop_values, segmented_lines, size)
-    plate_image = cv2.warpPerspective(standard_image, h, (size, size))
-
-    # On recherche des lignes dans la nouvelle image
-    lines = extract_lines(plate_image, threshold=110)
-    segmented_lines = segment_by_angle_kmeans(lines)
-
-    if len(segmented_lines) < 2:
-        return None
-
-    col_coords, row_coords = extract_valid_points(plate_image, segmented_lines)
-
     try:
+
+        cropped_image, crop_values, segmented_lines = extract_the_significant_cropimage(
+            standard_image)
+
+        if cropped_image is None:
+            return None
+
+        h = extract_homography(
+            cropped_image, crop_values, segmented_lines, size)
+        plate_image = cv2.warpPerspective(standard_image, h, (size, size))
+
+        # On recherche des lignes dans la nouvelle image
+        lines = extract_lines(plate_image, threshold=110)
+        segmented_lines = segment_by_angle_kmeans(lines)
+
+        if len(segmented_lines) < 2:
+            return None
+
+        col_coords, row_coords = extract_valid_points(
+            plate_image, segmented_lines)
+
         return Plate(plate_image, col_coords, row_coords, standard_image=standard_image, h=h)
     except:
         return None

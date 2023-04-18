@@ -2,22 +2,36 @@ import cv2
 import queue
 import threading
 import time
+import eventlet
 
 # bufferless VideoCapture
 
 
+def start_thread(reader):
+    t = threading.Thread(target=reader)
+    print("TEST 2")
+    t.daemon = True
+    t.start()
+    print("TEST 3")
+
+
 class VideoCapture:
-    def __init__(self, name):
+
+    end = False
+
+    def __init__(self, name, start_thread=start_thread):
         self.cap = cv2.VideoCapture(name)
         self.q = queue.Queue()
-        t = threading.Thread(target=self._reader)
-        t.daemon = True
-        t.start()
+        print("TEST 1")
+        start_thread(self._reader)
 
     # read frames as soon as they are available, keeping only most recent one
     def _reader(self):
-        while True:
-            ret, frame = self.cap.read()
+        while not self.end:
+            try:
+                ret, frame = self.cap.read()
+            except:
+                break
             if not ret:
                 break
             if not self.q.empty():
@@ -26,9 +40,15 @@ class VideoCapture:
                 except queue.Empty:
                     pass
             self.q.put(frame)
+            # eventlet.sleep()
 
-    def read(self):
-        return self.q.get()
+    def read(self, timeout=None):
+        print("READ", self.q.qsize())
+        return self.q.get(timeout=timeout)
+
+    def release(self):
+        self.end = True
+        self.cap.release()
 
 
 class VideoTimeSimultation:

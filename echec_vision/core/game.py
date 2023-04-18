@@ -50,3 +50,5 @@ class Game:
     def play_from_move(self, move: chess.Move, next_plate: Plate):
         self.last_plate = next_plate
         self.board.push(move)
+
+        return move

@@ -11,17 +11,31 @@ from core.camera.video_capture import VideoCapture
 # from core.server.server import socketio, app, start_server
 from core.server.types import GameLog
 from multiprocessing import Process, Value
-import json
-import asyncio
+
+
+def is_int(element: any) -> bool:
+    # If you expect None to be passed:
+    if element is None:
+        return False
+    try:
+        int(element)
+        return True
+    except ValueError:
+        return False
 
 
 class Session:
 
     is_start = False
     is_pause = False
-    url = None
+    url = "192.168.1.34:8080"
+    url_connected = False
+    url_error = False
 
-    def start(self, log_path='C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_demo_camera'):
+    def start(self):
+
+        print("START FCT")
+        print(self.url)
 
         if self.url == None:
             raise "Vous devez d'abord definir une url"
@@ -30,34 +44,75 @@ class Session:
             raise "La session a déjà commencé"
 
         self.is_start = True
+        self.get_connector().update_game_state()
 
-        cap = VideoCapture(self.url)
-        move_detector = MoveDetector(log_path)
+        socketio = self.get_socket()
 
-        # Read until video is completed
-        while(self.is_start):
+        def start_thread(reader):
+            socketio.start_background_task(reader)
 
-            if self.is_pause:
-                continue
+        url = int(self.url) if is_int(
+            self.url) else "http://" + str(self.url) + "/video"
 
-            # Capture frame-by-frame
-            frame = cap.read()
-            if frame is None:
-                continue
+        self.cap = VideoCapture(url, start_thread)
 
-            move_detector.next_frame(frame, debug=True)
+        socketio.start_background_task(self.start_loop)
 
-            # Press Q on keyboard to exit
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+    def start_loop(self, log_path='C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_demo_camera'):
 
-        # When everything done, release
-        # the video capture object
-        cap.release()
-        # Closes all the frames
-        cv2.destroyAllWindows()
+        #cap = cv2.VideoCapture(int(self.url) if is_int(self.url) else self.url)
+        #cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)
+        cap = self.cap
 
-        print("Start")
+        print("TEST 5")
+
+        self.move_detector = MoveDetector(log_path)
+
+        #start_time = time.time()
+        #timeout = 10
+
+        try:
+
+            print("TEST 6")
+            # Read until video is completed
+            while(self.is_start):
+
+                if self.is_pause:
+                    continue
+
+                # Capture frame-by-frame
+                #ret, frame = cap.read()
+                frame = cap.read(timeout=10)
+                # if ret != True:
+                if frame is None:
+                    # if time.time() - start_time > timeout:
+                    #     raise "no_frame"
+
+                    continue
+                elif not self.url_connected:
+                    self.url_connected = True
+                    self.get_connector().update_url_data()
+
+                self.move_detector.next_frame(frame, debug=True)
+                # Press Q on keyboard to exit
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+
+            # When everything done, release
+            # the video capture object
+            cap.release()
+            # Closes all the frames
+            cv2.destroyAllWindows()
+        except Exception as e:
+
+            print("START ERROR", e)
+
+            self.is_start = False
+            self.is_pause = False
+            self.url_error = True
+            self.get_connector().update_url_data()
+
+        print("end Start")
 
     def pause(self):
         self.is_pause = True
@@ -75,6 +130,16 @@ class Session:
         self.url = settings["url"]
 
         print("Set url", self.url)
+
+    def get_connector(self):
+        from core.server.connector import connector
+        print("TEST A")
+        return connector
+
+    def get_socket(self):
+        from core.server.server import socketio
+        print("TEST A2")
+        return socketio
 
 
 session = Session()

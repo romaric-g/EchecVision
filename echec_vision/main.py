@@ -10,7 +10,6 @@ from core.utils.image_logger import ImageLogger
 from core.camera.video_capture import VideoCapture
 from core.server.types import GameLog
 from core.server.server import socketio, app
-from core.session import session
 
 
 if __name__ == '__main__':

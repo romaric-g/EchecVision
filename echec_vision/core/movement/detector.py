@@ -7,7 +7,7 @@ from core.movement.difference import compute_difference_score
 from core.game import Game
 from core.utils.image import image_resize
 from core.utils.image_logger import ImageLogger
-
+from core.server.types import GameLog, ChessBoardState
 
 RELATIVE_DEPTH = 5
 MOVE_THRESHOLD = 1000
@@ -127,12 +127,21 @@ class MoveDetector():
                     self.image_logger.log(standard_image)
                     self.cropped_logger.log(current_plate_image)
 
+                    connector = self.get_connector()
+
                     if self.game.is_player_turn():
-                        self.game.play_from_plate(
+                        move = self.game.play_from_plate(
                             current_plate, self.map_logger)
 
                         print("Player has played : ")
                         print(self.game.board)
+
+                        connector.push_game_log(GameLog(
+                            user='player',
+                            message='Vous venez de jouer ' +
+                            str(move),
+                            wait=False
+                        ))
 
                         self.result = engine.play(
                             self.game.board, chess.engine.Limit(time=0.1))
@@ -140,13 +149,35 @@ class MoveDetector():
                         print("L'IA decide de joué le coup : ", self.result.move)
                         print("Vous devez reporter le coup sur le plateau !")
 
+                        connector.push_game_log(GameLog(
+                            user='ia',
+                            message='L\'IA veutjouer ' +
+                            str(self.result.move) +
+                            ', répertorier son coup sur le plateau',
+                            wait=True
+                        ))
+                        connector.update_chess_board_state(self.result.move)
+
                     else:
-                        self.game.play_from_move(
+                        move = self.game.play_from_move(
                             self.result.move, current_plate)
 
                         print("Le coup de l'IA a été reporté sur le plateau :")
                         print(self.game.board)
 
+                        connector.push_game_log(GameLog(
+                            user='ia',
+                            message='Le coup de l\'IA a bien été répertorié sur le plateau',
+                            wait=False
+                        ))
+
+                        connector.push_game_log(GameLog(
+                            user='player',
+                            message='C\'est à vous de jouer !',
+                            wait=True
+                        ))
+
+                        connector.update_chess_board_state()
                     self.new_state()
 
         if debug:
@@ -175,9 +206,19 @@ class MoveDetector():
         image = cv2.putText(image, "abs moov : " + str(self.absolute_moov_time), (50, 250), cv2.FONT_HERSHEY_SIMPLEX,
                             1, (255, 255, 255), 2, cv2.LINE_AA)
 
-        image = cv2.putText(image, "state : " + ("player" if self.game.is_player_turn() else "ia report"), (50, 400), cv2.FONT_HERSHEY_SIMPLEX,
-                            1, (0, 255, 255), 2, cv2.LINE_AA)
+        if self.game is not None:
+            image = cv2.putText(image, "state : " + ("player" if self.game.is_player_turn() else "ia report"), (50, 400), cv2.FONT_HERSHEY_SIMPLEX,
+                                1, (0, 255, 255), 2, cv2.LINE_AA)
+        else:
+            image = cv2.putText(image, "state : " + ("Game not defined"), (50, 400), cv2.FONT_HERSHEY_SIMPLEX,
+                                1, (0, 0, 255), 2, cv2.LINE_AA)
+
         image = cv2.putText(image, "long_moov : " + ("Oui" if self.long_moov_detected else "Non"), (50, 450), cv2.FONT_HERSHEY_SIMPLEX,
                             1, (0, 255, 255), 2, cv2.LINE_AA)
 
         return image
+
+    def get_connector(self):
+        from core.server.connector import connector
+        print("TEST A")
+        return connector
