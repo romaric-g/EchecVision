@@ -16,4 +16,4 @@ if __name__ == '__main__':
 
     print("Program starting...")
 
-    socketio.run(app, debug=False, port=5001)
+    socketio.run(app, debug=False, port=5000)

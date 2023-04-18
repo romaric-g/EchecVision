@@ -6,15 +6,23 @@ from core.plate.contour import extract_contours
 from core.plate.lines import extract_lines
 
 
+# ------------------------------------------------------------
+# Permet d'extraire la sous-image la plus signifiante
+# - Chaque contour detecter sur l'image initial forme une nouvelle sous-image
+# - On cherche la sous-image qui a le plus de ligne
+# ------------------------------------------------------------
+
 def extract_the_significant_cropimage(image):
 
     significant_segmented_lines = None
     significant_cropped_image = None
     significant_crop_values = None
 
+    # On cherche les contours dans l'image avec une taille superieur à 600
     contours = extract_contours(image, min_area=600, order=True)
     max_lines = 0
 
+    # On va calculer dans chaque contour le taux de ligne prsente
     for contour in contours:
         try:
             crop_values = get_crop_values(image, contour, 10)
@@ -23,9 +31,11 @@ def extract_the_significant_cropimage(image):
             # # On recuper les lignes presentes dans l'image
             lines = extract_lines(cropped_image, threshold=110)
 
+            # Si le nombre de ligne ne depasse pas le nombre maximum de ligne trouvé, on passe à la sous-image suivante
             if (len(lines) <= max_lines):
                 continue
 
+            # On separe les lignes verticales et horizontales
             segmented_lines = segment_by_angle_kmeans(lines)
 
             # Si il y a bien 2 groupes
@@ -39,6 +49,8 @@ def extract_the_significant_cropimage(image):
         except:
             continue
 
+    # On retourne la sous-image la plus significative, ainsi que les valeurs de la decoupe et les
+    # lignes detecter dans celle-ci
     return significant_cropped_image, significant_crop_values, significant_segmented_lines
 
 

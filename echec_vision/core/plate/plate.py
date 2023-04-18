@@ -5,6 +5,10 @@ from core.utils.display import show_line
 
 size = 700
 
+# ------------------------------------------------------------
+# Representation de l'extraction d'un plateau à partir d'une image
+# ------------------------------------------------------------
+
 
 class Plate:
 

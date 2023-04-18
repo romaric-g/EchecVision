@@ -1,6 +1,11 @@
 import cv2
 import imutils
 
+
+# ------------------------------------------------------------
+# Permet de calculer le score de difference entre 2 images
+# ------------------------------------------------------------
+
 def compute_difference_score(original, new, min_area=1000, log_name="thresh"):
     original = imutils.resize(original, height=600)
     new = imutils.resize(new, height=600)
@@ -35,6 +40,10 @@ def compute_difference_score(original, new, min_area=1000, log_name="thresh"):
             count += area
 
     return count
+
+# ------------------------------------------------------------
+# Permet d'afficher les differences entre 2 images
+# ------------------------------------------------------------
 
 
 def show_difference(original, new):

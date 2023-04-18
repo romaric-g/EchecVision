@@ -3,6 +3,10 @@ from flask_socketio import SocketIO, emit
 import chess
 import json
 
+# ------------------------------------------------------------
+# Permet de faire le lien entre le programme et le client web
+# ------------------------------------------------------------
+
 
 class Connector:
 
@@ -10,7 +14,6 @@ class Connector:
     game_logs_dumps = []
 
     def update_game_state(self):
-        print("TEST B")
         self.get_socketio().emit("new_game_state", {
             'is_pause': self.get_session().is_pause,
             'is_start': self.get_session().is_start
@@ -62,7 +65,6 @@ class Connector:
 
     def get_socketio(self) -> SocketIO:
         from core.server.server import socketio
-        print("TEST C")
         return socketio
 
 

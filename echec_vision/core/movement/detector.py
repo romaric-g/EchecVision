@@ -21,6 +21,13 @@ NS__MAX_UNVALIDE_PLATE = .5
 engine = chess.engine.SimpleEngine.popen_uci(
     r"C:\Users\Romaric\DataScience\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
 
+# ------------------------------------------------------------
+# Permet de detecter quand le joueur vient d'effectuer un mouvement sur le plateau de jeu
+#
+# Mouvement relatif : il y a une difference significative entre l'image (now) et (now - RELATIVE_DEPTH)
+# Mouvement absolue  : il y a une difference significative entre l'image (now) et (dernier mouvement)
+# ------------------------------------------------------------
+
 
 class MoveDetector():
 
@@ -59,6 +66,7 @@ class MoveDetector():
 
         return diff_time
 
+    # Quand une nouvelle image est disponible depuis la camera
     def next_frame(self, frame, debug=False):
 
         standard_image = image_resize(frame, height=700)
@@ -69,7 +77,9 @@ class MoveDetector():
         score_relative = -1
         score_absolute = -1
 
+        # Si le jeu n'a pas encore été initialisé
         if self.game == None:
+            # Si l'extraction de l'image est valide
             if current_plate != None:
                 self.initial_plate = current_plate
                 self.game = Game(self.initial_plate)
@@ -118,9 +128,6 @@ class MoveDetector():
                 if self.relative_moov_time >= LM__MIN_RELATIVE_MOOV:
                     self.long_moov_detected = True
 
-                # cv2.imshow("current_plate", current_plate.plate_img)
-
-                #  or game.board.turn == chess.BLACK
                 if (self.absolute_moov_time > NS__MIN_ABSOLUTE_MOOV) and self.relative_fix_time >= NS__MIN_RELATIVE_FIX and self.long_moov_detected:
 
                     # Log
@@ -220,5 +227,4 @@ class MoveDetector():
 
     def get_connector(self):
         from core.server.connector import connector
-        print("TEST A")
         return connector

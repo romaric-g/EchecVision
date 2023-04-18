@@ -1,5 +1,5 @@
 #import eventlet
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_socketio import SocketIO, emit
 import threading
 from flask_cors import CORS
@@ -7,12 +7,17 @@ from core.server.connector import connector
 from core.session import session
 import time
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="dist/assets", template_folder="dist")
 app.config['SECRET_KEY'] = 'secret!'
 CORS(app, resources={r"/*": {"origins": "*"}})
 #socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 # eventlet.monkey_patch()
+
+
+@app.route("/")
+def hello():
+    return render_template('index.html')
 
 
 @app.route("/http-call")
@@ -45,19 +50,11 @@ def connected():
     emit("connect", {"data": f"id: {request.sid} is connected"})
 
 
-@socketio.on('data')
-def handle_message(data):
-    """event listener when client types a message"""
-    print("data from the front end: ", str(data))
-    emit("data", {'data': data, 'id': request.sid}, broadcast=True)
-
-
 @socketio.on('start')
 def handle_start():
     """event listener when client start game"""
     try:
-        print("START !!!")
-        # socketio.start_background_task(session.start)
+        print("ACTION : START")
         session.start()
 
     except:
@@ -68,6 +65,7 @@ def handle_start():
 def handle_pause(data):
     """event listener when client pause game"""
     try:
+        print("ACTION : PAUSE")
         session.pause()
     except:
         print("Error on pausing game")
@@ -77,6 +75,7 @@ def handle_pause(data):
 def handle_resume(data):
     """event listener when client resume game"""
     try:
+        print("ACTION : RESUME")
         session.resume()
     except:
         print("Error on resuming game")
@@ -86,6 +85,7 @@ def handle_resume(data):
 def handle_resume():
     """event listener when client stop game"""
     try:
+        print("ACTION : STOP")
         session.stop()
     except:
         print("Error on stoping game")

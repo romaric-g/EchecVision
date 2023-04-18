@@ -2,6 +2,11 @@ from collections import defaultdict
 import numpy as np
 import cv2 as cv2
 
+# ------------------------------------------------------------
+# Permet de separer une liste de ligne en 2 groupes distincs
+# -> Utilé pour la separation des lignes verticals et horizontals
+# ------------------------------------------------------------
+
 def segment_by_angle_kmeans(lines, k=2, **kwargs):
     """Groups lines based on angle with k-means.
 
@@ -31,6 +36,10 @@ def segment_by_angle_kmeans(lines, k=2, **kwargs):
         segmented[labels[i]].append(line)
     segmented = list(segmented.values())
     return segmented
+
+# ------------------------------------------------------------
+# Permet de trouver l'intersecton entre 2 lignes
+# ------------------------------------------------------------
 
 def intersection(line1, line2):
     """Finds the intersection of two lines given in Hesse normal form.

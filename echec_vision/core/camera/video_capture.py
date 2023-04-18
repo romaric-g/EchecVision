@@ -9,10 +9,8 @@ import eventlet
 
 def start_thread(reader):
     t = threading.Thread(target=reader)
-    print("TEST 2")
     t.daemon = True
     t.start()
-    print("TEST 3")
 
 
 class VideoCapture:
@@ -22,7 +20,6 @@ class VideoCapture:
     def __init__(self, name, start_thread=start_thread):
         self.cap = cv2.VideoCapture(name)
         self.q = queue.Queue()
-        print("TEST 1")
         start_thread(self._reader)
 
     # read frames as soon as they are available, keeping only most recent one

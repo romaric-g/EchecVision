@@ -60,20 +60,11 @@ class Session:
 
     def start_loop(self, log_path='C:/Users/Romaric/DataScience/EchecsVision/echec_vision/images/log_demo_camera'):
 
-        #cap = cv2.VideoCapture(int(self.url) if is_int(self.url) else self.url)
-        #cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)
         cap = self.cap
-
-        print("TEST 5")
-
         self.move_detector = MoveDetector(log_path)
-
-        #start_time = time.time()
-        #timeout = 10
 
         try:
 
-            print("TEST 6")
             # Read until video is completed
             while(self.is_start):
 
@@ -81,13 +72,8 @@ class Session:
                     continue
 
                 # Capture frame-by-frame
-                #ret, frame = cap.read()
-                frame = cap.read(timeout=10)
-                # if ret != True:
+                frame = cap.read(timeout=2)
                 if frame is None:
-                    # if time.time() - start_time > timeout:
-                    #     raise "no_frame"
-
                     continue
                 elif not self.url_connected:
                     self.url_connected = True
@@ -105,7 +91,7 @@ class Session:
             cv2.destroyAllWindows()
         except Exception as e:
 
-            print("START ERROR", e)
+            print("START ERROR : ", e)
 
             self.is_start = False
             self.is_pause = False
@@ -133,12 +119,10 @@ class Session:
 
     def get_connector(self):
         from core.server.connector import connector
-        print("TEST A")
         return connector
 
     def get_socket(self):
         from core.server.server import socketio
-        print("TEST A2")
         return socketio
 
 

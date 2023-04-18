@@ -10,6 +10,7 @@ import StatusBar from './components/StatusBar';
 import LogStack from './components/LogStack';
 import { Square } from 'react-chessboard/dist/chessboard/types';
 
+const PORT = 5000
 
 const App = () => {
   const [initalData, setInitalData] = React.useState<InitalData>()
@@ -19,7 +20,7 @@ const App = () => {
   const { socketInstance, logs, url, isStart, isPause, setSocketInstance, setUrl, setLogs, setIsPause, setIsStart } = React.useContext(GlobalContext)
 
   const loadInitalData = React.useCallback(async () => {
-    const response = await fetch("http://localhost:5001/init")
+    const response = await fetch("http://localhost:" + PORT + "/init")
     const json = await response.json()
 
     if (json) {
@@ -48,7 +49,7 @@ const App = () => {
     if (!setSocketInstance) return;
 
     console.log("START")
-    const socket = io("http://localhost:5001/");
+    const socket = io("http://localhost:" + PORT + "/");
 
     console.log("new socket", socket)
     setSocketInstance(socket);

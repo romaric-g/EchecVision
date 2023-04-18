@@ -13,6 +13,11 @@ def log_change_map(change_map, logger: ImageLogger = None):
     logger.log(image)
 
 
+# ------------------------------------------------------------
+# Permet de calculer la carte des changements entre 2 plateaux
+# -> Retourne un score pour chaque case (8x8)
+# ------------------------------------------------------------
+
 def from_histogram(last_plate: Plate, next_plate: Plate):
 
     values = np.zeros((8, 8))
@@ -45,12 +50,15 @@ def from_histogram(last_plate: Plate, next_plate: Plate):
             array1 = resized1.astype(np.int16, copy=False)
             array2 = resized2.astype(np.int16, copy=False)
 
+            # On coupe les bords de chaque case
             array1 = array1[2:17, 2:17]
             array2 = array2[2:17, 2:17]
 
+            # On calcule les histogrammes de la case (last & next)
             hist1, _ = np.histogram(array1.ravel(), 8, [0, 256])
             hist2, _ = np.histogram(array2.ravel(), 8, [0, 256])
 
+            # Ce filtre 1D permet de faire "deborder" l'histogramme sur ses valeurs voisines
             filter = np.array([1, 1, 1])
 
             mask1 = np.convolve(hist1, filter)
@@ -59,6 +67,7 @@ def from_histogram(last_plate: Plate, next_plate: Plate):
             mask2 = np.convolve(hist2, filter)
             mask2 = mask2[1:-1]
 
+            # Calcule du depassement entre les 2 histogrammes
             depassement = - hist1 - mask1 + hist2 + mask2
             depassement[depassement < 0] = 0
 
