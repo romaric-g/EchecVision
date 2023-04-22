@@ -15,26 +15,31 @@ const SettingsModal = (props: Props) => {
     } = props
 
     const [tempUrl, setTempUrl] = React.useState("")
+    const [tempStockfishPath, setTempStockfishPath] = React.useState("")
 
-    const { url, setUrl, socketInstance } = React.useContext(GlobalContext);
+    const { url, stockfishPath, setUrl, setStockfishPath, socketInstance } = React.useContext(GlobalContext);
 
 
     const handleCancel = React.useCallback(() => {
         setTempUrl(url || "")
+        setTempStockfishPath(stockfishPath || "")
         closeModal()
-    }, [url])
+    }, [url, stockfishPath])
 
 
     const handleSave = React.useCallback(() => {
         console.log("socketInstance", socketInstance)
         if (socketInstance) {
-            socketInstance.emit("settings", { url: tempUrl })
+            socketInstance.emit("settings", { url: tempUrl, stockfish_path: tempStockfishPath })
         }
         if (setUrl) {
             setUrl(tempUrl)
         }
+        if (setStockfishPath) {
+            setStockfishPath(tempStockfishPath)
+        }
         closeModal()
-    }, [socketInstance, tempUrl, setUrl, closeModal])
+    }, [socketInstance, tempUrl, tempStockfishPath, setUrl, setStockfishPath, closeModal])
 
 
     React.useEffect(() => {
@@ -44,6 +49,14 @@ const SettingsModal = (props: Props) => {
             setTempUrl("")
         }
     }, [url])
+
+    React.useEffect(() => {
+        if (stockfishPath) {
+            setTempStockfishPath(stockfishPath)
+        } else {
+            setTempStockfishPath("")
+        }
+    }, [stockfishPath])
 
     return (
         <>
@@ -76,6 +89,11 @@ const SettingsModal = (props: Props) => {
                                             text={tempUrl}
                                             setText={setTempUrl}
                                             placeholder="URL de la camera"
+                                        />
+                                        <Input
+                                            text={tempStockfishPath}
+                                            setText={setTempStockfishPath}
+                                            placeholder="Chemin d'acces à stockfish.exe"
                                         />
                                     </div>
                                 </div>

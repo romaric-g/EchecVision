@@ -18,7 +18,6 @@ def extract_plate(standard_image):
     size = standard_image.shape[0]
 
     try:
-
         # Extrait la sous image à partir du contour avec le plus de ligne à l'interieur
         cropped_image, crop_values, segmented_lines = extract_the_significant_cropimage(
             standard_image)
@@ -46,5 +45,6 @@ def extract_plate(standard_image):
             plate_image, segmented_lines)
 
         return Plate(plate_image, col_coords, row_coords, standard_image=standard_image, h=h)
-    except:
+    except Exception as e:
+        print("Error on extract : ", e)
         return None

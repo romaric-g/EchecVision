@@ -1,5 +1,6 @@
 import cv2
 
+
 def extract_contours(image, min_area, order=True):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 

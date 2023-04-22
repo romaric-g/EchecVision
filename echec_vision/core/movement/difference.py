@@ -1,12 +1,14 @@
 import cv2
 import imutils
+from core.utils.image_logger import ImageLogger
 
 
 # ------------------------------------------------------------
 # Permet de calculer le score de difference entre 2 images
 # ------------------------------------------------------------
 
-def compute_difference_score(original, new, min_area=1000, log_name="thresh"):
+
+def compute_difference_score(original, new, min_area=1000, log_name="thresh", logger: ImageLogger = None):
     original = imutils.resize(original, height=600)
     new = imutils.resize(new, height=600)
 
@@ -22,6 +24,9 @@ def compute_difference_score(original, new, min_area=1000, log_name="thresh"):
     (T, thresh) = cv2.threshold(dilated, 10, 255, cv2.THRESH_BINARY)
 
     cv2.imshow(log_name, thresh)
+
+    if logger is not None:
+        logger.log(thresh)
 
     # now we have to find contours in the binarized image
     cnts = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)

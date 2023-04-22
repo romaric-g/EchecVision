@@ -13,7 +13,6 @@ from core.plate.lines import extract_lines
 # ------------------------------------------------------------
 
 def extract_the_significant_cropimage(image):
-
     significant_segmented_lines = None
     significant_cropped_image = None
     significant_crop_values = None
@@ -37,7 +36,6 @@ def extract_the_significant_cropimage(image):
 
             # On separe les lignes verticales et horizontales
             segmented_lines = segment_by_angle_kmeans(lines)
-
             # Si il y a bien 2 groupes
             if len(segmented_lines) == 2:
 

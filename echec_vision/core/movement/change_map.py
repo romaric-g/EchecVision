@@ -13,6 +13,12 @@ def log_change_map(change_map, logger: ImageLogger = None):
     logger.log(image)
 
 
+def map_to_image(change_map, size=80):
+    image = (change_map / np.max(change_map)) * 255
+
+    return cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
+
+
 # ------------------------------------------------------------
 # Permet de calculer la carte des changements entre 2 plateaux
 # -> Retourne un score pour chaque case (8x8)

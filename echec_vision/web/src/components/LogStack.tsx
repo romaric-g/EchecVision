@@ -11,7 +11,7 @@ const LogStack: React.FC<Props> = (props) => {
     } = props
 
     return (
-        <div className="stack grow bg-gray-200">
+        <div className="stack grow bg-gray-200 overflow-auto">
             {logs!.map((log) => (
                 <GameStackItem gameLog={log} />
             ))}

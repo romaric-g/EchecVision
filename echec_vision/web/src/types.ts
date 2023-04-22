@@ -32,6 +32,7 @@ export interface InitalData {
     game_logs: any[],
     is_pause: boolean,
     is_start: boolean,
+    stockfish_path: string,
     url: string,
     url_connected: boolean,
     url_error: boolean

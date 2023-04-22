@@ -29,9 +29,11 @@ def http_call():
 
 @app.route("/init")
 def init_call():
+    print("INIT", str(connector.get_session().stockfish_path))
     data = {
         'game_logs': connector.game_logs_dumps,
         'chess_board_state': connector.chess_board_state_dumps,
+        'stockfish_path': str(connector.get_session().stockfish_path),
         'url': connector.get_session().url,
         'url_connected': connector.get_session().url_connected,
         'url_error': connector.get_session().url_error,
@@ -57,8 +59,8 @@ def handle_start():
         print("ACTION : START")
         session.start()
 
-    except:
-        print("Error on starting game")
+    except Exception as e:
+        print("Error on starting game", e)
 
 
 @socketio.on('pause')

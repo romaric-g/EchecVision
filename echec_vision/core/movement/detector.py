@@ -18,7 +18,7 @@ NS__MIN_ABSOLUTE_MOOV = 2.5
 NS__MIN_RELATIVE_FIX = 1.5
 NS__MAX_UNVALIDE_PLATE = .5
 
-engine = chess.engine.SimpleEngine.popen_uci(
+default_engine = chess.engine.SimpleEngine.popen_uci(
     r"C:\Users\Romaric\DataScience\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
 
 # ------------------------------------------------------------
@@ -31,10 +31,11 @@ engine = chess.engine.SimpleEngine.popen_uci(
 
 class MoveDetector():
 
-    def __init__(self, log_path) -> None:
+    def __init__(self, log_path, engine=default_engine) -> None:
         self.game: Game = None
         self.initial_plate = None
         self.long_moov_detected = False
+        self.engine = engine
 
         self.standard_images = list()
         self.last_time = time.time()
@@ -42,6 +43,13 @@ class MoveDetector():
         self.relative_moov_time = 0
         self.relative_fix_time = 0
         self.absolute_moov_time = 0
+
+        self.currentLogger = ImageLogger(log_path, "current")
+        self.relativeLogger = ImageLogger(log_path, "relative")
+        self.absolueLogger = ImageLogger(log_path, "absolue")
+
+        self.relativeDiff = ImageLogger(log_path, "rltDiff")
+        self.absolueDiff = ImageLogger(log_path, "absDiff")
 
         self.image_logger = ImageLogger(log_path)
         self.cropped_logger = ImageLogger(log_path, 'cropped')
@@ -103,10 +111,14 @@ class MoveDetector():
             absolute_plate_image = cv2.warpPerspective(
                 absolute_plate.standard_image, h, (700, 700))
 
+            self.currentLogger.log(current_plate_image)
+            self.relativeLogger.log(relative_plate_image)
+            self.absolueLogger.log(absolute_plate_image)
+
             score_relative = compute_difference_score(
-                current_plate_image, relative_plate_image, MOVE_THRESHOLD, "relative")
+                current_plate_image, relative_plate_image, MOVE_THRESHOLD, "relative", self.relativeDiff)
             score_absolute = compute_difference_score(
-                current_plate_image, absolute_plate_image, MOVE_THRESHOLD, "absolute")
+                current_plate_image, absolute_plate_image, MOVE_THRESHOLD, "absolute", self.absolueDiff)
 
             # Count for moov and fix on relative difference
             if score_relative >= MOVE_THRESHOLD:
@@ -150,7 +162,7 @@ class MoveDetector():
                             wait=False
                         ))
 
-                        self.result = engine.play(
+                        self.result = self.engine.play(
                             self.game.board, chess.engine.Limit(time=0.1))
 
                         print("L'IA decide de joué le coup : ", self.result.move)

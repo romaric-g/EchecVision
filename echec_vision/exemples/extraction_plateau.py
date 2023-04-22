@@ -8,6 +8,7 @@ import cv2
 # -> Vous pouvez ajouter des images dans le repertoire /images
 # ------------------------------------------------------------
 
+
 def main(currentdir):
 
     print("Nom de l'image ?")
@@ -28,6 +29,7 @@ def main(currentdir):
         print("Aucune extraction valide n'a été trouvé !")
         return
 
+    cv2.imshow("Image initial", standard_image)
     extracted_plate.show()
 
     cv2.waitKey(0)

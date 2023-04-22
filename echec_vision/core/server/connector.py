@@ -51,14 +51,15 @@ class Connector:
             draw_moov_parse = [chess.square_name(
                 draw_moov.from_square), chess.square_name(draw_moov.to_square)]
 
-        chess_board_state: ChessBoardState = ChessBoardState(
-            fen=session.move_detector.game.board.fen(),
-            draw_moov=draw_moov_parse
-        )
+        if session is not None:
+            chess_board_state: ChessBoardState = ChessBoardState(
+                fen=session.move_detector.game.board.fen(),
+                draw_moov=draw_moov_parse
+            )
 
-        self.chess_board_state_dumps = json.dumps(chess_board_state)
-        self.get_socketio().emit("new_chess_board_state", self.chess_board_state_dumps)
-
+            self.chess_board_state_dumps = json.dumps(chess_board_state)
+            self.get_socketio().emit("new_chess_board_state", self.chess_board_state_dumps)
+        
     def get_session(self):
         from core.session import session
         return session

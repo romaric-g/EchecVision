@@ -17,7 +17,7 @@ const App = () => {
   const [fen, setFen] = React.useState<string>()
   const [drawMove, setDrawMove] = React.useState<Square[]>()
 
-  const { socketInstance, logs, url, isStart, isPause, setSocketInstance, setUrl, setLogs, setIsPause, setIsStart } = React.useContext(GlobalContext)
+  const { socketInstance, logs, isStart, isPause, setSocketInstance, setUrl, setStockfishPath, setLogs, setIsPause, setIsStart } = React.useContext(GlobalContext)
 
   const loadInitalData = React.useCallback(async () => {
     const response = await fetch("http://localhost:" + PORT + "/init")
@@ -29,6 +29,7 @@ const App = () => {
       setInitalData(initalData)
 
       setUrl!(initalData.url)
+      setStockfishPath!(initalData.stockfish_path)
       setLogs!(initalData.game_logs.map((gl) => {
         return {
           message: gl.message,
@@ -95,10 +96,6 @@ const App = () => {
       setDrawMove(newChessBoardState.draw_moov)
     })
 
-    socket.on('data', (e) => {
-      console.log("data", e)
-    })
-
     loadInitalData()
 
     return () => {
@@ -106,9 +103,6 @@ const App = () => {
       socket.disconnect();
     };
   }, [setSocketInstance, loadInitalData, setIsStart, setIsPause]);
-
-  console.log("B", socketInstance)
-  console.log(logs)
 
   const pushLog = React.useCallback((gameLog: GameLog) => {
     setLogs!((prevLogs) => [...prevLogs, gameLog])

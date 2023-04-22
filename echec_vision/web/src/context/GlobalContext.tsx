@@ -7,6 +7,8 @@ interface Provider {
     setLogs?: React.Dispatch<React.SetStateAction<GameLog[]>>
     url?: string
     setUrl?: React.Dispatch<React.SetStateAction<string>>
+    stockfishPath?: string,
+    setStockfishPath?: React.Dispatch<React.SetStateAction<string>>
     socketInstance?: Socket
     setSocketInstance?: (socket: Socket) => void
     isStart?: boolean,
@@ -25,6 +27,7 @@ export const GlobalContext = React.createContext<Provider>({});
 export const GlobalProvider = (props: Props) => {
     const [logs, setLogs] = React.useState<GameLog[]>([])
     const [url, setUrl] = React.useState("")
+    const [stockfishPath, setStockfishPath] = React.useState("")
     const [isStart, setIsStart] = React.useState(false)
     const [isPause, setIsPause] = React.useState(false)
     const [socketInstance, setSocketInstance] = React.useState<Socket>();
@@ -36,6 +39,8 @@ export const GlobalProvider = (props: Props) => {
                 setLogs,
                 url,
                 setUrl,
+                stockfishPath,
+                setStockfishPath,
                 socketInstance,
                 setSocketInstance,
                 isStart,
