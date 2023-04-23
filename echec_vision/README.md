@@ -7,7 +7,7 @@ permet à un joueur de jouer contre une intelligence artificielle sur échiquier
 
 ## Prérequis et dépendances
 
-- Avoir un téléphone Android avec l'application [CameraIP](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=fr&gl=US) et un trépied
+- Avoir un téléphone Android avec l'application [IPWebcam](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=fr&gl=US) et un trépied
 
 - Avoir [Stockfish](https://stockfishchess.org/) installé sur votre ordinateur
 
