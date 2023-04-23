@@ -16,6 +16,7 @@ permet à un joueur de jouer contre une intelligence artificielle sur échiquier
 ```
 - OpenCV
 - Numpy
+- python-chess
 - Matplotlib (Pour l'affichage des graphiques)
 ```
 
