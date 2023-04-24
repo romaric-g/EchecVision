@@ -2,7 +2,6 @@ import cv2
 import queue
 import threading
 import time
-import eventlet
 
 # bufferless VideoCapture
 
@@ -37,7 +36,6 @@ class VideoCapture:
                 except queue.Empty:
                     pass
             self.q.put(frame)
-            # eventlet.sleep()
 
     def read(self, timeout=None):
         print("READ", self.q.qsize())
