@@ -36,7 +36,7 @@ permet à un joueur de jouer contre une intelligence artificielle sur échiquier
 
 ## Utilisation
 
-Pour jouer, vous devrez placer une caméra au-dessus du plateau d'échecs. Cela peut être fait avec votre téléphone en installant [CameraIP](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=fr&gl=US) (disponible uniquement sur android)
+Pour jouer, vous devrez placer une caméra au-dessus du plateau d'échecs. Cela peut être fait avec votre téléphone en installant [IPWebcam](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=fr&gl=US) (disponible uniquement sur android)
 
 Une fois cela fait, vous pouvez simplement utiliser ces instructions en ouvrant un terminal sur votre ordinateur :
 
