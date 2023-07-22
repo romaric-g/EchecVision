@@ -5,6 +5,8 @@ plateau d’échecs à l’aide d’une caméra, c’est-à-dire enregistrer un 
 d’échecs physique. Ce suivi des déplacements sera ensuite utilisé pour créer un système qui
 permet à un joueur de jouer contre une intelligence artificielle sur échiquier physique.
 
+![echec_vision_AdobeExpress](https://github.com/romaric-g/EchecVision/assets/34138733/1ed0ac04-c5a4-4af0-9b9f-6d4f5d38344b)
+
 ## Prérequis et dépendances
 
 - Avoir un téléphone Android avec l'application [IPWebcam](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=fr&gl=US) et un trépied
