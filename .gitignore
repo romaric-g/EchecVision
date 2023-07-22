@@ -1,3 +1,5 @@
 images/
 generated/
 Vidéo partie échec.mp4
+env/
+__pycache__/

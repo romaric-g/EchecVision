@@ -58,7 +58,7 @@ def find_cases_between_points(points, tolerance=.2):
         # On vient recuperer le reste de la division par 1 de nos distances normaliser
         ect_norm_rst = np.abs((ect_norm % 1))
         # Puis on utilise ce reste pour connaire le nombre de case presente entre 2 lignes
-        ect_norm_divisor = (ect_norm - ect_norm_rst).astype(int)
+        ect_norm_divisor = (ect_norm - ect_norm_rst).astype(np.int16)
 
         # print("ect_norm_rst", ect_norm_rst)
         # print("ect_norm_divisor", ect_norm_divisor)

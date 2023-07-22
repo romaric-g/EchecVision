@@ -23,7 +23,7 @@ def get_center(image):
     # print("Shape", image_shape)
     center = np.array([image_shape[0], image_shape[1]]).astype(np.double)
     center = center / 2
-    center = center.astype(np.int)
+    center = center.astype(np.int16)
     center = tuple(center)
 
     return center

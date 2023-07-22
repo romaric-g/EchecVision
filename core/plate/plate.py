@@ -35,8 +35,8 @@ class Plate:
         col_ratio = resized_plate_img.shape[1] / plate_image.shape[1]
         row_ratio = resized_plate_img.shape[0] / plate_image.shape[0]
 
-        resize_col_coords = (col_coords * col_ratio).astype(np.int)
-        resize_row_coords = (row_coords * row_ratio).astype(np.int)
+        resize_col_coords = (col_coords * col_ratio).astype(np.int16)
+        resize_row_coords = (row_coords * row_ratio).astype(np.int16)
 
         self.plate_image = resized_plate_img
         self.col_coords = resize_col_coords

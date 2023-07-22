@@ -48,4 +48,4 @@ def get_interpolate_coord(points):
 
                 coord.append(interpolate_point)
 
-    return np.array(coord).astype(int)
+    return np.array(coord).astype(np.int16)

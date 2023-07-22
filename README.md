@@ -7,7 +7,7 @@ permet à un joueur de jouer contre une intelligence artificielle sur échiquier
 
 ## Prérequis et dépendances
 
-- Avoir un téléphone Android avec l'application [CameraIP](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=fr&gl=US) et un trépied
+- Avoir un téléphone Android avec l'application [IPWebcam](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=fr&gl=US) et un trépied
 
 - Avoir [Stockfish](https://stockfishchess.org/) installé sur votre ordinateur
 
@@ -16,8 +16,20 @@ permet à un joueur de jouer contre une intelligence artificielle sur échiquier
 ```
 - OpenCV
 - Numpy
+- flask
+- flask-CORS
+- imutils
+- python-chess
+- python-socket-io
 - Matplotlib (Pour l'affichage des graphiques)
 ```
+
+## Installation
+
+    git clone https://github.com/romaric-g/EchecVision
+    cd EchecVision/echec_vision
+    python -m venv env
+    pip install -r requirements.txt
 
 ## Utilisation
 
@@ -25,8 +37,11 @@ Pour jouer, vous devrez placer une caméra au-dessus du plateau d'échecs. Cela 
 
 Une fois cela fait, vous pouvez simplement utiliser ces instructions en ouvrant un terminal sur votre ordinateur :
 
+<<<<<<< HEAD:README.md
     git clone https://github.com/romaric-g/EchecVision
     cd EchecVision
+=======
+>>>>>>> f1d1f4cc91f8387219cd0e5c3c7e03f8ea477987:echec_vision/README.md
     python main.py
 
 Vous devez ensuite ouvrir l'URL local qui vous donnera acces à une interface web.
@@ -36,8 +51,11 @@ Dans celle-ci, vous pourrez alors configurer l'IP de la caméra ainsi que l'empl
 
 Afin d'expérimenter le projet, vous pouvez aussi vous référer aux exemples :
 
+<<<<<<< HEAD:README.md
     git clone https://github.com/romaric-g/EchecVision
     cd EchecVision
+=======
+>>>>>>> f1d1f4cc91f8387219cd0e5c3c7e03f8ea477987:echec_vision/README.md
     cd exemples
     python <nom-de-l-exemple>.py
 
